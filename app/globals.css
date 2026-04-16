@@ -1,0 +1,551 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: "Editorial New";
+  src: url("/fonts/PPEditorialNew-Ultralight.otf") format("opentype");
+  font-weight: 200;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Editorial New";
+  src: url("/fonts/PPEditorialNew-UltralightItalic.otf") format("opentype");
+  font-weight: 200;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Editorial New";
+  src: url("/fonts/PPEditorialNew-Regular.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Editorial New";
+  src: url("/fonts/PPEditorialNew-Italic.otf") format("opentype");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Neue Montreal";
+  src: url("/fonts/PPNeueMontreal-Book.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Neue Montreal";
+  src: url("/fonts/PPNeueMontreal-Medium.otf") format("opentype");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Neue Montreal";
+  src: url("/fonts/PPNeueMontreal-Bold.otf") format("opentype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --font-editorial: "Editorial New";
+  --font-neue: "Neue Montreal";
+  --color-bg: #f7f5f2;
+  --color-ink: #111111;
+  --color-secondary: #bfb8af;
+  --color-accent: #e6dfd7;
+}
+
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html,
+body {
+  background: var(--color-bg);
+  color: var(--color-ink);
+  font-family: var(--font-neue), system-ui, sans-serif;
+  font-weight: 400;
+  line-height: 1.6;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-editorial), serif;
+  font-weight: 200;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+}
+
+p {
+  line-height: 1.6;
+}
+
+::selection {
+  background: #111111;
+  color: #f7f5f2;
+}
+
+/* Lenis smooth scroll */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+/* Typography helpers */
+.font-editorial {
+  font-family: var(--font-editorial), serif;
+  font-weight: 200;
+}
+.font-editorial-italic {
+  font-family: var(--font-editorial), serif;
+  font-style: italic;
+  font-weight: 200;
+}
+.text-balance {
+  text-wrap: balance;
+}
+
+/*
+ * Reveal entry states.
+ *
+ * Headlines animate as a single block — never split into lines or words.
+ * The only job of CSS here is to set the pre-animation state so the
+ * element doesn't flash in before GSAP hydrates.
+ *
+ * Typography is NEVER clipped — no overflow:hidden masks on headlines.
+ */
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(32px);
+  filter: blur(6px);
+  will-change: opacity, transform, filter;
+}
+
+[data-reveal-media] {
+  opacity: 0;
+  transform: scale(1.05);
+  transform-origin: center center;
+  will-change: opacity, transform;
+}
+
+/* Hover underline */
+.link-underline {
+  position: relative;
+}
+.link-underline::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 100%;
+  height: 1px;
+  background: currentColor;
+  transform-origin: right center;
+  transform: scaleX(0);
+  transition: transform 0.6s cubic-bezier(0.77, 0, 0.175, 1);
+}
+.link-underline:hover::after {
+  transform-origin: left center;
+  transform: scaleX(1);
+}
+
+/* Grayscale media hover */
+.media-grayscale {
+  filter: grayscale(100%);
+  transition: filter 1s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.media-grayscale:hover {
+  filter: grayscale(0);
+}
+
+/* Marquee */
+.marquee {
+  display: flex;
+  gap: 3rem;
+  animation: marquee 11s linear infinite;
+  white-space: nowrap;
+}
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal],
+  [data-reveal-media] {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+  .marquee {
+    animation: none;
+  }
+}
+
+/* ------------------------------------------------------------------
+ * Custom editorial cursor
+ * Two layers (thin ring + small dot) with state-based sizing,
+ * magnetic pull via JS, mix-blend-mode: difference for auto-contrast.
+ * Desktop only — gated by `body.cursor-active` which is applied by
+ * the Cursor component after a (hover: hover) check.
+ * ------------------------------------------------------------------ */
+
+body.cursor-active,
+body.cursor-active * {
+  cursor: none !important;
+}
+
+.cursor-root {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 100;
+  mix-blend-mode: difference;
+}
+
+.cursor-dot,
+.cursor-ring {
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  border-radius: 50%;
+  will-change: transform, width, height, border-color, background-color;
+}
+
+.cursor-dot {
+  width: 5px;
+  height: 5px;
+  background: #f7f5f2;
+  opacity: 0;
+  transition:
+    width 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    height 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.3s ease;
+}
+
+.cursor-ring {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid rgba(247, 245, 242, 0.7);
+  background: transparent;
+  opacity: 0;
+  transition:
+    width 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    height 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.35s ease,
+    background-color 0.35s ease,
+    box-shadow 0.35s ease,
+    opacity 0.3s ease;
+}
+
+.cursor-label {
+  font-family: var(--font-neue), system-ui, sans-serif;
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #f7f5f2;
+  opacity: 0;
+  transform: scale(0.85);
+  transition:
+    opacity 0.35s ease,
+    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+  user-select: none;
+}
+
+/* ---- States ---- */
+
+.cursor-root.is-hover .cursor-ring {
+  width: 56px;
+  height: 56px;
+  border-color: rgba(247, 245, 242, 0.95);
+}
+.cursor-root.is-hover .cursor-dot {
+  width: 3px;
+  height: 3px;
+  opacity: 0.55;
+}
+
+.cursor-root.is-cta .cursor-ring {
+  width: 84px;
+  height: 84px;
+  border-color: transparent;
+  background: rgba(247, 245, 242, 0.16);
+}
+.cursor-root.is-cta .cursor-dot {
+  opacity: 0;
+}
+
+.cursor-root.is-media .cursor-ring {
+  width: 96px;
+  height: 96px;
+  border-color: rgba(247, 245, 242, 0.75);
+}
+.cursor-root.is-media .cursor-label {
+  opacity: 1;
+  transform: scale(1);
+}
+.cursor-root.is-media .cursor-dot {
+  opacity: 0;
+}
+
+/* Subtle persistent chromatic shift while over the hero. */
+.cursor-root.is-hero .cursor-ring {
+  border-color: rgba(247, 245, 242, 0.92);
+  box-shadow:
+    1.5px 0 0 rgba(255, 40, 90, 0.45),
+    -1.5px 0 0 rgba(0, 220, 240, 0.45);
+}
+
+/* 160ms glitch reaction fired by Hero's video transition event.
+ * Animates box-shadow only — transform is owned by GSAP (position) so
+ * we never fight the quickTo tween. */
+.cursor-root.is-glitch .cursor-ring {
+  animation: cursor-ring-glitch 160ms steps(3, end) 1;
+}
+.cursor-root.is-glitch .cursor-dot {
+  animation: cursor-dot-glitch 160ms steps(3, end) 1;
+}
+
+@keyframes cursor-ring-glitch {
+  0% {
+    box-shadow:
+      5px 0 0 rgba(255, 40, 90, 0.9),
+      -5px 0 0 rgba(0, 220, 240, 0.9);
+    border-color: rgba(247, 245, 242, 1);
+  }
+  50% {
+    box-shadow:
+      -6px 0 0 rgba(255, 40, 90, 0.85),
+      6px 0 0 rgba(0, 220, 240, 0.85);
+  }
+  100% {
+    box-shadow:
+      0 0 0 rgba(255, 40, 90, 0),
+      0 0 0 rgba(0, 220, 240, 0);
+  }
+}
+
+@keyframes cursor-dot-glitch {
+  0%, 100% { opacity: 1; }
+  40% { opacity: 0.25; }
+  70% { opacity: 1; }
+}
+
+/* ---- Safety gates ---- */
+
+@media (hover: none), (pointer: coarse) {
+  .cursor-root { display: none; }
+  body.cursor-active,
+  body.cursor-active * { cursor: auto !important; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cursor-dot,
+  .cursor-ring,
+  .cursor-label {
+    transition: none;
+  }
+  .cursor-root.is-glitch .cursor-ring,
+  .cursor-root.is-glitch .cursor-dot {
+    animation: none;
+  }
+}
+
+/* ------------------------------------------------------------------
+ * Hero cinematic glitch — used only by the Hero component.
+ * Scoped with `hero-` prefix so it cannot bleed into other sections.
+ * ------------------------------------------------------------------ */
+
+/* Stage during glitch: SVG filter (RGB split + tear) + composite motion.
+   Transform, opacity, filter are each animated on separate rules so they
+   do not collide in the same @keyframes block. */
+.hero-glitch-stage {
+  filter: url(#hero-glitch-fx) grayscale(0.35) contrast(1.25) brightness(0.95);
+  animation:
+    hero-stage-motion 320ms cubic-bezier(0.22, 0.9, 0.3, 1) 1,
+    hero-stage-flicker 320ms steps(8, end) 1;
+}
+
+@keyframes hero-stage-motion {
+  0%   { transform: translate(0, 0) scale(1); }
+  10%  { transform: translate(-7px, 3px) scale(1.025); }
+  25%  { transform: translate(8px, -4px) scale(1.02); }
+  40%  { transform: translate(-5px, 5px) scale(1.015); }
+  55%  { transform: translate(6px, -2px) scale(1.01); }
+  70%  { transform: translate(-3px, 2px) scale(1.005); }
+  85%  { transform: translate(2px, 0) scale(1); }
+  100% { transform: translate(0, 0) scale(1); }
+}
+
+@keyframes hero-stage-flicker {
+  0%   { opacity: 1; }
+  12%  { opacity: 0.7; }
+  24%  { opacity: 1; }
+  38%  { opacity: 0.55; }
+  52%  { opacity: 1; }
+  68%  { opacity: 0.82; }
+  82%  { opacity: 1; }
+  100% { opacity: 1; }
+}
+
+/* Giant typography glitch: shake + skew + heavy RGB text-shadow. */
+.hero-glitch-text {
+  display: inline-block;
+  animation:
+    hero-text-motion 200ms steps(5, end) 1,
+    hero-text-rgb 200ms cubic-bezier(0.4, 0, 0.6, 1) 1;
+}
+
+@keyframes hero-text-motion {
+  0%   { transform: translate(0, 0) scale(1) skewX(0); }
+  18%  { transform: translate(-7px, 2px) scale(1.03) skewX(-1deg); }
+  36%  { transform: translate(8px, -3px) scale(1.02) skewX(1deg); }
+  54%  { transform: translate(-4px, 2px) scale(1.015) skewX(0); }
+  72%  { transform: translate(3px, -1px) scale(1.005) skewX(0); }
+  100% { transform: translate(0, 0) scale(1) skewX(0); }
+}
+
+@keyframes hero-text-rgb {
+  0%, 100% { text-shadow: none; }
+  20% {
+    text-shadow: 6px 0 rgba(255, 40, 90, 0.9),
+      -6px 0 rgba(0, 220, 240, 0.9);
+  }
+  45% {
+    text-shadow: -8px 0 rgba(255, 40, 90, 0.85),
+      8px 0 rgba(0, 220, 240, 0.85);
+  }
+  70% {
+    text-shadow: 3px 0 rgba(255, 40, 90, 0.6),
+      -3px 0 rgba(0, 220, 240, 0.6);
+  }
+  90% {
+    text-shadow: 1px 0 rgba(255, 40, 90, 0.3),
+      -1px 0 rgba(0, 220, 240, 0.3);
+  }
+}
+
+/* Horizontal band streaks — only present during the 320ms glitch. */
+.hero-band {
+  position: absolute;
+  left: 0;
+  right: 0;
+  pointer-events: none;
+  mix-blend-mode: difference;
+  will-change: transform, opacity;
+}
+.hero-band-1 {
+  top: 22%;
+  height: 3px;
+  background: rgba(255, 240, 230, 0.85);
+  animation: hero-band-a 320ms steps(6, end) 1;
+}
+.hero-band-2 {
+  top: 48%;
+  height: 1px;
+  background: rgba(210, 225, 255, 0.9);
+  animation: hero-band-b 320ms steps(5, end) 1;
+}
+.hero-band-3 {
+  top: 72%;
+  height: 4px;
+  background: rgba(255, 205, 215, 0.75);
+  animation: hero-band-c 320ms steps(7, end) 1;
+}
+@keyframes hero-band-a {
+  0%, 100% { transform: translateX(0); opacity: 0; }
+  15% { transform: translateX(-120px); opacity: 0.9; }
+  35% { transform: translateX(80px); opacity: 0.95; }
+  55% { transform: translateX(-40px); opacity: 0.8; }
+  75% { transform: translateX(20px); opacity: 0.4; }
+}
+@keyframes hero-band-b {
+  0%, 100% { transform: translateX(0); opacity: 0; }
+  25% { transform: translateX(60px); opacity: 1; }
+  50% { transform: translateX(-100px); opacity: 0.9; }
+  80% { transform: translateX(10px); opacity: 0.3; }
+}
+@keyframes hero-band-c {
+  0%, 100% { transform: translateX(0); opacity: 0; }
+  20% { transform: translateX(-40px); opacity: 0.7; }
+  45% { transform: translateX(110px); opacity: 0.85; }
+  70% { transform: translateX(-30px); opacity: 0.6; }
+}
+
+/* Procedural SVG grain — always visible, boosted during glitch. */
+.hero-grain {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0   0 0 0 0 0   0 0 0 0 0   0 0 0 1.1 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='0.55'/></svg>");
+  background-size: 240px 240px;
+  mix-blend-mode: overlay;
+  opacity: 0.12;
+  transition: opacity 200ms linear;
+}
+.hero-grain.is-boost {
+  opacity: 0.35;
+}
+
+/* Scanlines — stronger during glitch, invisible otherwise. */
+.hero-scanlines {
+  background-image: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0) 0,
+    rgba(0, 0, 0, 0) 2px,
+    rgba(255, 255, 255, 0.12) 2px,
+    rgba(255, 255, 255, 0.12) 3px
+  );
+  mix-blend-mode: overlay;
+  opacity: 0;
+  pointer-events: none;
+}
+.hero-scanlines.is-active {
+  animation: hero-scan-shift 320ms linear 1;
+}
+@keyframes hero-scan-shift {
+  0%   { background-position-y: -20px; opacity: 1; }
+  60%  { background-position-y: 10px; opacity: 0.75; }
+  100% { background-position-y: 24px; opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-glitch-stage,
+  .hero-glitch-text,
+  .hero-scanlines.is-active,
+  .hero-band {
+    animation: none;
+  }
+  .hero-glitch-stage {
+    filter: none;
+  }
+}
