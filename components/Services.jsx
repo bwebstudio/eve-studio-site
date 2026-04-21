@@ -4,120 +4,100 @@ import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { revealOnScroll } from "@/lib/animations";
-
-const services = [
-  {
-    index: "(01)",
-    nameStart: "Creative",
-    nameItalic: "Direction",
-    items: [
-      "Brand strategy",
-      "Positioning",
-      "Visual identity",
-      "Art direction",
-    ],
-    note: "We set the tone — a considered direction your brand can live inside for years.",
-  },
-  {
-    index: "(02)",
-    nameStart: "Visual",
-    nameItalic: "Content",
-    items: [
-      "Photography",
-      "Film & motion",
-      "Editorial content",
-      "Social storytelling",
-    ],
-    note: "In-house production, from concept and casting to the final grade.",
-  },
-  {
-    index: "(03)",
-    nameStart: "Brand",
-    nameItalic: "Connections",
-    items: [
-      "Press & communication",
-      "Partnerships",
-      "Events & activations",
-      "Brand community",
-    ],
-    note: "We open doors — to the right people, rooms and conversations.",
-  },
-];
+import useLang from "@/lib/useLang";
 
 export default function Services() {
+  const { t } = useLang();
   const rootRef = useRef(null);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
     gsap.registerPlugin(ScrollTrigger);
-
-    const ctx = gsap.context(() => {
-      revealOnScroll(rootRef.current);
-    }, rootRef);
-
+    const ctx = gsap.context(() => { revealOnScroll(rootRef.current); }, rootRef);
     return () => ctx.revert();
   }, []);
 
   return (
-    <section
-      ref={rootRef}
-      id="services"
-      className="relative w-full bg-ink py-[100px] text-bg md:py-[160px]"
-    >
-      <div className="mx-auto max-w-frame px-6 md:px-12">
-        <div className="grid grid-cols-12 gap-6 md:gap-8">
-          <div className="col-span-12 flex items-baseline justify-between text-[11px] uppercase tracking-[0.22em] text-bg/60">
-            <span>(Services)</span>
-            <span>Index / 04</span>
-          </div>
-
-          <h2
-            data-reveal
-            className="col-span-12 mt-10 text-display-md md:mt-16 lg:col-span-11"
-          >
-            Three disciplines, one{" "}
-            <em className="font-editorial-italic">point of view</em>.
-          </h2>
+    <section ref={rootRef} id="services" className="relative w-full bg-ink py-[80px] text-bg md:py-[120px] lg:py-[160px]">
+      <div className="mx-auto max-w-frame px-6 md:px-10 lg:px-12">
+        <div className="flex items-baseline justify-between text-[10px] uppercase tracking-[0.22em] text-bg/60 md:text-[11px]">
+          <span>{t.services.sectionLabel}</span>
+          <span>{t.services.sectionIndex}</span>
         </div>
 
-        <div className="mt-16 flex flex-col md:mt-24">
-          {services.map((s) => (
-            <div
+        <h2
+          data-reveal
+          className="mt-10 max-w-[18ch] text-bg md:mt-14 lg:mt-16 lg:max-w-[20ch]"
+          style={{
+            fontFamily: "var(--font-editorial)",
+            fontWeight: 300,
+            fontSize: "clamp(2.25rem, 7vw, 6rem)",
+            lineHeight: 1.05,
+            letterSpacing: "-0.025em",
+          }}
+        >
+          {t.services.headlineA} {t.services.headlineB}{" "}
+          <em className="font-editorial-italic">{t.services.headlineItalic}</em>.
+        </h2>
+
+        <div className="mt-14 flex flex-col md:mt-20 lg:mt-24">
+          {t.services.items.map((s) => (
+            <article
               key={s.index}
               data-reveal
-              className="grid grid-cols-12 gap-6 border-t border-bg/15 py-10 md:gap-8 md:py-14"
+              className="grid grid-cols-1 gap-6 border-t border-bg/15 py-10 md:grid-cols-[1fr_1fr] md:gap-10 md:py-14 lg:gap-20 lg:py-20"
             >
-              <div className="col-span-12 text-[12px] uppercase tracking-[0.22em] text-bg/50 md:col-span-2">
-                {s.index}
+              <div>
+                <p className="text-[10px] uppercase tracking-[0.22em] text-bg/50 md:text-[11px]">
+                  {s.index}
+                </p>
+                <h3
+                  className="mt-3 text-bg md:mt-5"
+                  style={{
+                    fontFamily: "var(--font-editorial)",
+                    fontWeight: 300,
+                    fontSize: "clamp(2.25rem, 6.5vw, 5.5rem)",
+                    lineHeight: 1.05,
+                    letterSpacing: "-0.02em",
+                  }}
+                >
+                  {s.nameStart}{" "}
+                  <em className="font-editorial-italic">{s.nameItalic}</em>
+                </h3>
               </div>
 
-              <h3 className="col-span-12 text-5xl text-bg md:col-span-5 md:text-7xl">
-                {s.nameStart}{" "}
-                <em className="font-editorial-italic">{s.nameItalic}</em>
-              </h3>
-
-              <ul className="col-span-12 space-y-2 text-base text-bg/80 md:col-span-3">
-                {s.items.map((item) => (
-                  <li key={item} className="flex items-baseline gap-3">
-                    <span className="h-[1px] w-4 translate-y-[-4px] bg-bg/40" />
-                    {item}
-                  </li>
-                ))}
-              </ul>
-
-              <p className="col-span-12 text-[13px] text-bg/60 md:col-span-2">
-                {s.note}
-              </p>
-            </div>
+              <div className="flex flex-col gap-8 md:gap-10 md:pt-2 lg:pt-3">
+                <ul
+                  className="space-y-3 text-[15px] text-bg/85 md:space-y-3.5 md:text-base lg:text-lg"
+                  style={{ lineHeight: 1.6 }}
+                >
+                  {s.list.map((item) => (
+                    <li key={item} className="flex items-baseline gap-3">
+                      <span className="h-[1px] w-4 flex-shrink-0 translate-y-[-4px] bg-bg/40" />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+                <p
+                  className="max-w-[48ch] text-[13px] text-bg/60 md:text-sm"
+                  style={{ lineHeight: 1.65 }}
+                >
+                  {s.note}
+                </p>
+              </div>
+            </article>
           ))}
           <div className="h-[1px] w-full bg-bg/15" />
         </div>
 
-        <div className="mt-16 overflow-hidden py-8 text-bg/80 md:mt-24">
-          <div className="marquee font-editorial text-5xl italic md:text-7xl">
-            <span>Identity · Connections · Universes ·&nbsp;</span>
-            <span>Identity · Connections · Universes ·&nbsp;</span>
-            <span>Identity · Connections · Universes ·&nbsp;</span>
+        <div className="mt-14 overflow-hidden py-6 text-bg/80 md:mt-20 md:py-8 lg:mt-24">
+          <div
+            className="marquee font-editorial italic"
+            style={{ fontSize: "clamp(2.5rem, 6vw, 5rem)" }}
+          >
+            <span>{t.services.marquee}</span>
+            <span>{t.services.marquee}</span>
+            <span>{t.services.marquee}</span>
           </div>
         </div>
       </div>

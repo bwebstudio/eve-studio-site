@@ -1,6 +1,7 @@
 import "./globals.css";
 import SmoothScroll from "@/components/SmoothScroll";
 import Cursor from "@/components/Cursor";
+import Providers from "@/components/Providers";
 
 export const metadata = {
   title: "EVE — Creative Studio",
@@ -25,9 +26,11 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" className="bg-bg">
       <body className="bg-bg text-ink antialiased selection:bg-ink selection:text-bg">
-        <SmoothScroll />
-        <Cursor />
-        {children}
+        <Providers>
+          <SmoothScroll />
+          <Cursor />
+          {children}
+        </Providers>
       </body>
     </html>
   );
