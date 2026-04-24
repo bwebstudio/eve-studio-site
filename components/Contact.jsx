@@ -5,6 +5,7 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { revealOnScroll } from "@/lib/animations";
 import useLang from "@/lib/useLang";
+import MaskReveal from "./MaskReveal";
 
 export default function Contact() {
   const { t } = useLang();
@@ -32,9 +33,13 @@ export default function Contact() {
             <p data-reveal className="text-[12px] uppercase tracking-[0.22em] text-ink/60">
               {c.intro}
             </p>
-            <h2 data-reveal className="mt-8 text-display-xl text-ink">
+            <MaskReveal
+              className="mt-8"
+              innerClassName="text-display-xl text-ink"
+              duration={1.2}
+            >
               {c.headlineA} <em className="font-editorial-italic">{c.headlineItalic}</em>.
-            </h2>
+            </MaskReveal>
           </div>
 
           <div className="col-span-12 mt-12 flex flex-col gap-10 md:col-span-10 md:col-start-2 md:mt-16 md:flex-row md:items-end md:justify-between">

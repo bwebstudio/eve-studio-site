@@ -1,53 +1,22 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { revealOnMount } from "@/lib/animations";
+import { motion, useScroll, useTransform } from "framer-motion";
 import useLang from "@/lib/useLang";
+import useAppReady from "@/lib/useAppReady";
+import MaskReveal from "./MaskReveal";
 
 const VIDEOS = ["/video/video1.mp4", "/video/video2.mp4", "/video/video3.mp4"];
-const CYCLE_MS = 3000;
-const STAGE_GLITCH_MS = 320;
-const TEXT_GLITCH_MS = 200;
-const VIDEO_SWAP_AT_MS = 150;
-
-const GLITCH_POOL = "!@#$%^*_-=+/\\|<>?#$01234567890";
-
-function scramble(str, intensity) {
-  let out = "";
-  for (let i = 0; i < str.length; i += 1) {
-    const ch = str[i];
-    if (/\s/.test(ch) || Math.random() > intensity) {
-      out += ch;
-    } else {
-      out += GLITCH_POOL[Math.floor(Math.random() * GLITCH_POOL.length)];
-    }
-  }
-  return out;
-}
+const CYCLE_MS = 5200;
+const EASE = [0.22, 1, 0.36, 1];
 
 export default function Hero() {
   const { t } = useLang();
-  const rootRef = useRef(null);
-  const parallaxRef = useRef(null);
+  const { ready } = useAppReady();
   const videoRefs = useRef([]);
-  const scenesRef = useRef(t.hero.scenes);
+  const stripRef = useRef(null);
 
   const [idx, setIdx] = useState(0);
-  const [stageGlitch, setStageGlitch] = useState(false);
-  const [textGlitch, setTextGlitch] = useState(false);
-  const [displayWord, setDisplayWord] = useState(t.hero.scenes[0].word);
-
-  useEffect(() => {
-    scenesRef.current = t.hero.scenes;
-  }, [t]);
-
-  useEffect(() => {
-    if (stageGlitch && typeof window !== "undefined") {
-      window.dispatchEvent(new CustomEvent("hero:glitch"));
-    }
-  }, [stageGlitch]);
 
   useEffect(() => {
     videoRefs.current.forEach((v, i) => {
@@ -60,167 +29,169 @@ export default function Hero() {
         v.pause();
       }
     });
-    setDisplayWord(t.hero.scenes[idx].word);
-  }, [idx, t]);
+  }, [idx]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
     if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
-
-    const timers = [];
-    let alive = true;
-    let current = 0;
-
-    const run = () => {
-      if (!alive) return;
-      const scenes = scenesRef.current;
-      const next = (current + 1) % scenes.length;
-      const incomingWord = scenes[next].word;
-
-      setStageGlitch(true);
-      setTextGlitch(true);
-
-      const frames = [
-        { at: 0, intensity: 0.4, source: scenes[current].word },
-        { at: 55, intensity: 0.6, source: scenes[current].word },
-        { at: 110, intensity: 0.5, source: incomingWord },
-        { at: 160, intensity: 0.25, source: incomingWord },
-      ];
-      frames.forEach(({ at, intensity, source }) => {
-        timers.push(
-          setTimeout(() => {
-            if (!alive) return;
-            setDisplayWord(scramble(source, intensity));
-          }, at)
-        );
-      });
-
-      timers.push(setTimeout(() => { if (alive) setDisplayWord(incomingWord); }, TEXT_GLITCH_MS));
-      timers.push(setTimeout(() => { if (!alive) return; current = next; setIdx(next); }, VIDEO_SWAP_AT_MS));
-      timers.push(setTimeout(() => { if (alive) setTextGlitch(false); }, TEXT_GLITCH_MS));
-      timers.push(setTimeout(() => { if (alive) setStageGlitch(false); }, STAGE_GLITCH_MS));
-      timers.push(setTimeout(run, CYCLE_MS));
-    };
-
-    timers.push(setTimeout(run, CYCLE_MS));
-    return () => { alive = false; timers.forEach(clearTimeout); };
+    const id = setInterval(() => setIdx((i) => (i + 1) % VIDEOS.length), CYCLE_MS);
+    return () => clearInterval(id);
   }, []);
 
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    gsap.registerPlugin(ScrollTrigger);
-    const ctx = gsap.context(() => {
-      revealOnMount(rootRef.current, { delay: 0.3, stagger: 0.12 });
-      gsap.to(parallaxRef.current, {
-        yPercent: 15,
-        ease: "none",
-        scrollTrigger: { trigger: rootRef.current, start: "top top", end: "bottom top", scrub: true },
-      });
-    }, rootRef);
-    return () => ctx.revert();
-  }, []);
+  // Scroll-linked dark overlay on the cinematic strip.
+  // Bell curve: the strip enters light, darkens to near-black as it
+  // centers in the viewport, then releases back to light as it exits.
+  const { scrollYProgress } = useScroll({
+    target: stripRef,
+    offset: ["start end", "end start"],
+  });
+  const overlayOpacity = useTransform(
+    scrollYProgress,
+    [0, 0.2, 0.4, 0.6, 0.92, 1],
+    [0, 0, 0.95, 0.9, 0.25, 0],
+    { clamp: true }
+  );
+  const imageScale = useTransform(scrollYProgress, [0, 1], [1.08, 1], { clamp: true });
 
-  const activeScene = t.hero.scenes[idx];
+  const activeWord = t.hero.scenes[idx]?.word || "";
 
   return (
-    <section
-      ref={rootRef}
-      id="top"
-      data-cursor="hero"
-      className="relative flex min-h-[100svh] w-full flex-col overflow-hidden bg-ink text-bg"
-    >
-      <svg aria-hidden="true" focusable="false" width="0" height="0" className="pointer-events-none absolute" style={{ position: "absolute", width: 0, height: 0 }}>
-        <defs>
-          <filter id="hero-glitch-fx" x="-10%" y="-10%" width="120%" height="120%" colorInterpolationFilters="sRGB">
-            <feTurbulence type="fractalNoise" baseFrequency="0.015 0.65" numOctaves="2" seed="7" result="noise" />
-            <feDisplacementMap in="SourceGraphic" in2="noise" scale="14" xChannelSelector="R" yChannelSelector="G" result="torn" />
-            <feColorMatrix in="torn" type="matrix" values="1 0 0 0 0   0 0 0 0 0   0 0 0 0 0   0 0 0 1 0" result="rCh" />
-            <feOffset in="rCh" dx="7" dy="0" result="rOff" />
-            <feColorMatrix in="torn" type="matrix" values="0 0 0 0 0   0 1 0 0 0   0 0 1 0 0   0 0 0 1 0" result="bgCh" />
-            <feOffset in="bgCh" dx="-7" dy="0" result="bgOff" />
-            <feBlend in="rOff" in2="bgOff" mode="screen" />
-          </filter>
-        </defs>
-      </svg>
+    <section id="top" className="relative w-full bg-bg text-ink">
+      {/* Fixed viewport-wide dark overlay. Scroll-driven: dims the
+          entire screen as the cinematic strip crosses the viewport,
+          then releases back to light. z-40 keeps it under the nav
+          (z-50) so the menu remains readable. */}
+      <motion.div
+        aria-hidden="true"
+        className="pointer-events-none fixed inset-0 z-40 bg-ink"
+        style={{ opacity: overlayOpacity, willChange: "opacity" }}
+      />
 
-      <div ref={parallaxRef} className="absolute inset-0">
-        <div className={`absolute inset-0 ${stageGlitch ? "hero-glitch-stage" : ""}`}>
-          {VIDEOS.map((src, i) => (
-            <video key={src} ref={(el) => { videoRefs.current[i] = el; }} src={src} autoPlay={i === 0} muted playsInline preload="auto" aria-hidden="true" className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-[200ms] ease-out ${i === idx ? "opacity-100" : "opacity-0"}`} />
-          ))}
-        </div>
-        <div className="pointer-events-none absolute inset-0" style={{ background: "linear-gradient(180deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.3) 38%, rgba(0,0,0,0.7) 100%)" }} />
-        <div className={`hero-grain pointer-events-none absolute inset-0 ${stageGlitch ? "is-boost" : ""}`} />
-        <div className={`hero-scanlines pointer-events-none absolute inset-0 ${stageGlitch ? "is-active" : ""}`} />
-        <div className="pointer-events-none absolute inset-0" style={{ background: "radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.55) 100%)" }} />
-        {stageGlitch && (
-          <>
-            <span className="hero-band hero-band-1" />
-            <span className="hero-band hero-band-2" />
-            <span className="hero-band hero-band-3" />
-          </>
-        )}
-      </div>
-
-      <div className="relative mx-auto flex w-full max-w-frame flex-1 flex-col px-6 pt-32 md:px-12 md:pt-36">
-        <div className="grid grid-cols-12 gap-6 md:gap-8">
-          <div data-reveal className="col-span-6 text-[11px] uppercase tracking-[0.22em] text-bg/70">
-            {t.hero.meta}
+      {/* ============================================================
+         Editorial top zone — minimal, centered, on light bg.
+         min-h-[100svh] on mobile guarantees the zone fills the small
+         viewports, so the video strip stays below the fold at
+         scroll=0 and the dark overlay can't darken the header on
+         first paint. Desktop lets the content define its own height.
+         ============================================================ */}
+      <div className="relative flex min-h-[100svh] flex-col pt-28 md:min-h-0 md:pt-36">
+        {/* Top meta row — 3 cols on desktop, center hidden on mobile
+            to avoid three crammed strings sharing a narrow row. */}
+        <div className="mx-auto grid max-w-frame grid-cols-12 items-baseline gap-4 px-6 text-[10px] uppercase tracking-[0.22em] text-ink/55 md:gap-8 md:px-12 md:text-[11px]">
+          <div className="col-span-6 md:col-span-4">
+            <MaskReveal onMount delay={0.35} duration={0.9}>{t.hero.meta}</MaskReveal>
           </div>
-          <div data-reveal className="col-span-6 text-right text-[11px] uppercase tracking-[0.22em] text-bg/70">
-            Reel {String(idx + 1).padStart(2, "0")} / {String(VIDEOS.length).padStart(2, "0")}
+          <div className="hidden md:col-span-4 md:block md:text-center">
+            <MaskReveal onMount delay={0.45} duration={0.9}>{t.hero.tagline}</MaskReveal>
+          </div>
+          <div className="col-span-6 text-right tabular-nums md:col-span-4">
+            <MaskReveal onMount delay={0.55} duration={0.9}>
+              {`Reel ${String(idx + 1).padStart(2, "0")} / ${String(VIDEOS.length).padStart(2, "0")}`}
+            </MaskReveal>
           </div>
         </div>
 
-        <div className="min-h-[12vh] flex-1" />
-
-        <div className="grid grid-cols-12 gap-6 pb-12 md:gap-8 md:pb-16">
-          <div className="col-span-12">
-            <div data-reveal className="mb-3 text-[11px] uppercase tracking-[0.22em] text-bg/60">
-              (Vol. 01 — {activeScene?.word.toLowerCase()})
-            </div>
-            <h1
-              data-reveal
-              className="text-bg"
-              style={{
+        {/* Centered editorial title block */}
+        <div className="mx-auto mt-24 flex max-w-frame flex-col items-center px-6 text-center md:mt-36 md:px-12">
+          <MaskReveal
+            onMount
+            delay={0.65}
+            duration={0.9}
+            innerClassName="text-ink/65"
+            innerStyle={{
+              fontFamily: "var(--font-neue)",
+              fontSize: "11px",
+              letterSpacing: "0.32em",
+              textTransform: "uppercase",
+            }}
+          >
+            {t.hero.kicker}
+          </MaskReveal>
+          <h1 className="mt-5 md:mt-7">
+            <MaskReveal
+              onMount
+              delay={0.85}
+              duration={1.25}
+              innerClassName="italic text-ink"
+              innerStyle={{
                 fontFamily: "var(--font-editorial)",
                 fontWeight: 200,
-                fontStyle: activeScene?.italic ? "italic" : "normal",
-                fontSize: "clamp(3.5rem, 17vw, 14rem)",
-                lineHeight: 0.9,
-                letterSpacing: "-0.04em",
-                whiteSpace: "nowrap",
-                maxWidth: "88vw",
-                overflow: "visible",
+                fontSize: "clamp(2.75rem, 9vw, 8.5rem)",
+                lineHeight: 1.02,
+                letterSpacing: "-0.03em",
+                display: "inline-block",
               }}
             >
-              <span className={textGlitch ? "hero-glitch-text" : undefined} aria-live="polite">
-                {displayWord}
-              </span>
-            </h1>
-          </div>
+              {t.hero.title}
+            </MaskReveal>
+          </h1>
+        </div>
 
-          <div className="col-span-12 mt-8 md:col-span-6 md:mt-10">
-            <p data-reveal className="max-w-md text-base text-bg/80 md:text-lg">
-              {t.hero.supporting}
-            </p>
-          </div>
-
-          <div className="col-span-12 mt-6 flex items-end justify-between text-[12px] uppercase tracking-[0.22em] text-bg/70 md:col-span-5 md:col-start-8 md:mt-10">
-            <div data-reveal className="flex items-center gap-5">
-              <a href="#work" data-cursor="cta" data-magnetic="0.3" className="link-underline">{t.hero.ctaWork}</a>
-              <span className="text-bg/30">/</span>
-              <a href="#contact" data-cursor="cta" data-magnetic="0.3" className="link-underline">{t.hero.ctaContact}</a>
-            </div>
-            <div data-reveal className="hidden text-[10px] tracking-[0.3em] text-bg/50 md:block">
-              {t.hero.scroll}
-            </div>
-          </div>
+        {/* Utility bar — "Fullscreen +" style. mt-auto pins it to
+            the bottom of the 100svh flex column on mobile, keeping
+            the layout balanced instead of clumping at the top. */}
+        <div className="mx-auto mt-auto w-full max-w-frame px-6 pb-8 md:mt-28 md:px-12 md:pb-0">
+          <motion.div
+            className="flex items-center justify-between border-t border-ink/15 pt-5 text-[10px] uppercase tracking-[0.24em] text-ink/55 md:pt-6 md:text-[11px]"
+            initial={{ opacity: 0 }}
+            animate={ready ? { opacity: 1 } : { opacity: 0 }}
+            transition={{ duration: 0.9, ease: EASE, delay: 1.05 }}
+          >
+            <span>{t.hero.ctaWork}</span>
+            <motion.span
+              key={activeWord}
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, ease: EASE }}
+              className="hidden tracking-[0.28em] text-ink/70 md:block"
+            >
+              ({activeWord.toLowerCase()})
+            </motion.span>
+            <span aria-hidden="true" className="text-base leading-none">+</span>
+          </motion.div>
         </div>
       </div>
 
-      <div className="pointer-events-none absolute bottom-5 left-1/2 -translate-x-1/2 text-[10px] uppercase tracking-[0.3em] text-bg/60 md:hidden">
-        {t.hero.scroll}
+      {/* ============================================================
+         Cinematic strip — full-bleed, dark. Scroll-linked overlay
+         creates the color handoff into the next section.
+         ============================================================ */}
+      <div
+        ref={stripRef}
+        data-cursor="hero"
+        className="relative z-[45] mt-10 w-full overflow-hidden bg-ink md:mt-14"
+        style={{ height: "clamp(60vh, 85vh, 100svh)" }}
+      >
+        {/* Video layer — subtle scale from scroll for parallax-like drift */}
+        <motion.div
+          className="absolute inset-0"
+          style={{ scale: imageScale, willChange: "transform" }}
+        >
+          {VIDEOS.map((src, i) => (
+            <video
+              key={src}
+              ref={(el) => { videoRefs.current[i] = el; }}
+              src={src}
+              autoPlay={i === 0}
+              muted
+              playsInline
+              preload="auto"
+              aria-hidden="true"
+              className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-[900ms] ease-out ${i === idx ? "opacity-100" : "opacity-0"}`}
+            />
+          ))}
+        </motion.div>
+
+        {/* Bottom navigator */}
+        <a
+          href="#work"
+          data-cursor="cta"
+          data-magnetic="0.3"
+          className="absolute bottom-10 left-1/2 flex -translate-x-1/2 flex-col items-center gap-2 text-[10px] uppercase tracking-[0.3em] text-bg/85 transition-opacity duration-500 hover:text-bg md:bottom-14 md:text-[11px]"
+        >
+          <span>{t.hero.ctaWork}</span>
+          <span className="h-6 w-px bg-bg/40" aria-hidden="true" />
+        </a>
       </div>
     </section>
   );

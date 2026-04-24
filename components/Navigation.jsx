@@ -4,10 +4,13 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { gsap } from "gsap";
 import useLang from "@/lib/useLang";
+import useAppReady from "@/lib/useAppReady";
+import Logo from "./Logo";
 import MobileMenu from "./MobileMenu";
 
 export default function Navigation() {
   const { t, lang, toggle, setLang } = useLang();
+  const { ready } = useAppReady();
   const [time, setTime] = useState("");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -29,8 +32,16 @@ export default function Navigation() {
 
   useEffect(() => {
     if (!navRef.current) return;
-    gsap.fromTo(navRef.current, { y: -24, opacity: 0 }, { y: 0, opacity: 1, duration: 1, delay: 0.4, ease: "power3.out" });
-  }, []);
+    if (!ready) {
+      gsap.set(navRef.current, { y: -24, opacity: 0 });
+      return;
+    }
+    gsap.fromTo(
+      navRef.current,
+      { y: -24, opacity: 0 },
+      { y: 0, opacity: 1, duration: 1, delay: 0.15, ease: "power3.out" }
+    );
+  }, [ready]);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
@@ -57,14 +68,7 @@ export default function Navigation() {
           scrolled ? "text-ink" : "text-bg"
         }`}
       >
-        <Link
-          href="/"
-          aria-label="EVE Studio — Home"
-          className="flex-shrink-0 cursor-pointer text-[22px] leading-none"
-          style={{ fontFamily: "var(--font-editorial)", letterSpacing: "-0.01em" }}
-        >
-          eve<span className="italic">.</span>studio
-        </Link>
+        <Logo href="/" />
 
         <nav className="hidden items-center gap-8 text-[12px] uppercase tracking-[0.18em] lg:flex">
           {primaryLinks.map((link) => (

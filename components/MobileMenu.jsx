@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 import Link from "next/link";
 import { gsap } from "gsap";
 import useLang from "@/lib/useLang";
+import Logo from "./Logo";
 
 export default function MobileMenu({ isOpen, onClose }) {
   const { t } = useLang();
@@ -132,18 +133,15 @@ export default function MobileMenu({ isOpen, onClose }) {
       <div aria-hidden="true" className="hero-grain pointer-events-none absolute inset-0" style={{ opacity: 0.22 }} />
 
       <div className="relative z-10 flex items-center justify-between px-6 py-6">
-        <Link
+        <Logo
           href="/"
-          aria-label="EVE Studio — Home"
+          compactOnScroll={false}
+          immediate
           onClick={() => {
             resetBodyScrollLock();
             onClose();
           }}
-          className="cursor-pointer text-[22px] leading-none"
-          style={{ fontFamily: "var(--font-editorial)", letterSpacing: "-0.01em" }}
-        >
-          eve<span className="italic">.</span>studio
-        </Link>
+        />
         <button ref={closeBtnRef} type="button" onClick={onClose} aria-label="Close menu" className="flex items-center gap-3 text-[12px] uppercase tracking-[0.2em]">
           <span>{t.nav.close}</span>
           <span aria-hidden="true" className="text-[20px] leading-none">×</span>

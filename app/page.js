@@ -3,6 +3,7 @@ import Hero from "@/components/Hero";
 import Studio from "@/components/Studio";
 import SelectedWork from "@/components/SelectedWork";
 import Services from "@/components/Services";
+import Newsletter from "@/components/Newsletter";
 import Contact from "@/components/Contact";
 
 export default function Home() {
@@ -13,6 +14,7 @@ export default function Home() {
       <Studio />
       <SelectedWork />
       <Services />
+      <Newsletter />
       <Contact />
     </main>
   );

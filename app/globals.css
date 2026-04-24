@@ -137,8 +137,7 @@ html.lenis body {
 [data-reveal] {
   opacity: 0;
   transform: translateY(32px);
-  filter: blur(6px);
-  will-change: opacity, transform, filter;
+  will-change: opacity, transform;
 }
 
 [data-reveal-media] {
@@ -169,29 +168,40 @@ html.lenis body {
   transform: scaleX(1);
 }
 
-/* Grayscale media hover */
+/* Grayscale media hover — transition ONLY on filter.
+ * transform is owned by framer-motion on animated images; a CSS transition
+ * on transform here would fight the JS animation frame-by-frame and cancel
+ * out translate motion. */
 .media-grayscale {
   filter: grayscale(100%);
-  transition: filter 1s cubic-bezier(0.22, 1, 0.36, 1),
-    transform 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: filter 1s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .media-grayscale:hover {
   filter: grayscale(0);
 }
 
-/* Marquee */
+/* Marquee — 3 copies of identical content. Spacing lives on each copy
+   as padding-right (not gap), so every copy is structurally the same
+   width. Translating by -33.3333% (one full copy) lands copy 2 exactly
+   where copy 1 started — seamless loop, no jump. */
 .marquee {
   display: flex;
-  gap: 3rem;
-  animation: marquee 11s linear infinite;
+  width: max-content;
+  animation: marquee 14s linear infinite;
   white-space: nowrap;
+  will-change: transform;
+  backface-visibility: hidden;
+}
+.marquee > * {
+  flex-shrink: 0;
+  padding-right: 3rem;
 }
 @keyframes marquee {
   from {
-    transform: translateX(0);
+    transform: translate3d(0, 0, 0);
   }
   to {
-    transform: translateX(-50%);
+    transform: translate3d(-33.3333%, 0, 0);
   }
 }
 

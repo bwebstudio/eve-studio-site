@@ -5,6 +5,7 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { revealOnScroll } from "@/lib/animations";
 import useLang from "@/lib/useLang";
+import MaskReveal from "./MaskReveal";
 
 export default function Services() {
   const { t } = useLang();
@@ -25,20 +26,22 @@ export default function Services() {
           <span>{t.services.sectionIndex}</span>
         </div>
 
-        <h2
-          data-reveal
-          className="mt-10 max-w-[18ch] text-bg md:mt-14 lg:mt-16 lg:max-w-[20ch]"
-          style={{
+        <MaskReveal
+          className="mt-10 max-w-[18ch] md:mt-14 lg:mt-16 lg:max-w-[20ch]"
+          innerClassName="text-bg"
+          innerStyle={{
             fontFamily: "var(--font-editorial)",
             fontWeight: 300,
             fontSize: "clamp(2.25rem, 7vw, 6rem)",
             lineHeight: 1.05,
             letterSpacing: "-0.025em",
           }}
+          duration={1.15}
+          maskColor="#0B0B0B"
         >
           {t.services.headlineA} {t.services.headlineB}{" "}
           <em className="font-editorial-italic">{t.services.headlineItalic}</em>.
-        </h2>
+        </MaskReveal>
 
         <div className="mt-14 flex flex-col md:mt-20 lg:mt-24">
           {t.services.items.map((s) => (
@@ -51,19 +54,22 @@ export default function Services() {
                 <p className="text-[10px] uppercase tracking-[0.22em] text-bg/50 md:text-[11px]">
                   {s.index}
                 </p>
-                <h3
-                  className="mt-3 text-bg md:mt-5"
-                  style={{
+                <MaskReveal
+                  className="mt-3 md:mt-5"
+                  innerClassName="text-bg"
+                  innerStyle={{
                     fontFamily: "var(--font-editorial)",
                     fontWeight: 300,
                     fontSize: "clamp(2.25rem, 6.5vw, 5.5rem)",
                     lineHeight: 1.05,
                     letterSpacing: "-0.02em",
                   }}
+                  duration={1.05}
+                  maskColor="#0B0B0B"
                 >
                   {s.nameStart}{" "}
                   <em className="font-editorial-italic">{s.nameItalic}</em>
-                </h3>
+                </MaskReveal>
               </div>
 
               <div className="flex flex-col gap-8 md:gap-10 md:pt-2 lg:pt-3">

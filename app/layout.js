@@ -2,6 +2,7 @@ import "./globals.css";
 import SmoothScroll from "@/components/SmoothScroll";
 import Cursor from "@/components/Cursor";
 import Providers from "@/components/Providers";
+import Preloader from "@/components/Preloader";
 
 export const metadata = {
   title: "EVE — Creative Studio",
@@ -30,6 +31,7 @@ export default function RootLayout({ children }) {
           <SmoothScroll />
           <Cursor />
           {children}
+          <Preloader />
         </Providers>
       </body>
     </html>
