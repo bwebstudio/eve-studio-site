@@ -41,13 +41,17 @@ export default function Hero() {
   // Scroll-linked dark overlay on the cinematic strip.
   // Bell curve: the strip enters light, darkens to near-black as it
   // centers in the viewport, then releases back to light as it exits.
+  // Offset uses "start center" so progress = 0 only when the strip's
+  // top has reached viewport center — gives the strip room to peek at
+  // the bottom of the first viewport on mobile without firing the
+  // overlay against the editorial header above.
   const { scrollYProgress } = useScroll({
     target: stripRef,
-    offset: ["start end", "end start"],
+    offset: ["start center", "end start"],
   });
   const overlayOpacity = useTransform(
     scrollYProgress,
-    [0, 0.2, 0.4, 0.6, 0.92, 1],
+    [0, 0.05, 0.25, 0.5, 0.75, 0.9],
     [0, 0, 0.95, 0.9, 0.25, 0],
     { clamp: true }
   );
@@ -69,12 +73,12 @@ export default function Hero() {
 
       {/* ============================================================
          Editorial top zone — minimal, centered, on light bg.
-         min-h-[100svh] on mobile guarantees the zone fills the small
-         viewports, so the video strip stays below the fold at
-         scroll=0 and the dark overlay can't darken the header on
-         first paint. Desktop lets the content define its own height.
+         Natural content height; the strip is allowed to peek into
+         the first viewport on mobile. Overlay timing (above) keeps
+         the dim at 0 until the strip top crosses viewport center,
+         so the editorial header never darkens on first paint.
          ============================================================ */}
-      <div className="relative flex min-h-[100svh] flex-col pt-28 md:min-h-0 md:pt-36">
+      <div className="relative pt-28 md:pt-36">
         {/* Top meta row — 3 cols on desktop, center hidden on mobile
             to avoid three crammed strings sharing a narrow row. */}
         <div className="mx-auto grid max-w-frame grid-cols-12 items-baseline gap-4 px-6 text-[10px] uppercase tracking-[0.22em] text-ink/55 md:gap-8 md:px-12 md:text-[11px]">
@@ -127,10 +131,8 @@ export default function Hero() {
           </h1>
         </div>
 
-        {/* Utility bar — "Fullscreen +" style. mt-auto pins it to
-            the bottom of the 100svh flex column on mobile, keeping
-            the layout balanced instead of clumping at the top. */}
-        <div className="mx-auto mt-auto w-full max-w-frame px-6 pb-8 md:mt-28 md:px-12 md:pb-0">
+        {/* Utility bar — "Fullscreen +" style. */}
+        <div className="mx-auto mt-20 max-w-frame px-6 md:mt-28 md:px-12">
           <motion.div
             className="flex items-center justify-between border-t border-ink/15 pt-5 text-[10px] uppercase tracking-[0.24em] text-ink/55 md:pt-6 md:text-[11px]"
             initial={{ opacity: 0 }}

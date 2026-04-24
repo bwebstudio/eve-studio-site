@@ -88,13 +88,16 @@ export default function Newsletter() {
   // ramps as this section crosses the viewport, identical mechanic
   // to the hero's black overlay but attenuated so it reads as a
   // gentle paper-tone moment, not a heavy mood shift.
+  // Offset uses "start center" so the tint only ramps once the
+  // section's top has reached viewport centre — keeps it from
+  // bleeding over the previous (Services) section.
   const { scrollYProgress } = useScroll({
     target: rootRef,
-    offset: ["start end", "end start"],
+    offset: ["start center", "end start"],
   });
   const tintOpacity = useTransform(
     scrollYProgress,
-    [0, 0.2, 0.4, 0.6, 0.92, 1],
+    [0, 0.05, 0.25, 0.5, 0.75, 0.9],
     [0, 0, 0.65, 0.6, 0.18, 0],
     { clamp: true }
   );
