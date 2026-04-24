@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { motion, useScroll, useTransform } from "framer-motion";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { revealOnScroll } from "@/lib/animations";
@@ -8,6 +9,10 @@ import useLang from "@/lib/useLang";
 import MaskReveal from "./MaskReveal";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+// Same warm beige as before, but applied through a scroll-driven
+// overlay so the tint breathes in/out as the section enters and
+// leaves the viewport — same mechanic as the hero's black overlay.
+const TINT = "#d8c9b1";
 
 export default function Newsletter() {
   const { t } = useLang();
@@ -79,13 +84,44 @@ export default function Newsletter() {
 
   const isLocked = status === "submitting" || status === "success";
 
+  // Scroll-driven beige tint — viewport-wide overlay whose opacity
+  // ramps as this section crosses the viewport, identical mechanic
+  // to the hero's black overlay but attenuated so it reads as a
+  // gentle paper-tone moment, not a heavy mood shift.
+  const { scrollYProgress } = useScroll({
+    target: rootRef,
+    offset: ["start end", "end start"],
+  });
+  const tintOpacity = useTransform(
+    scrollYProgress,
+    [0, 0.2, 0.4, 0.6, 0.92, 1],
+    [0, 0, 0.65, 0.6, 0.18, 0],
+    { clamp: true }
+  );
+
   return (
-    <section
-      ref={rootRef}
-      id="newsletter"
-      className="relative w-full bg-bg py-[100px] md:py-[160px]"
-    >
-      <div className="mx-auto max-w-frame px-6 md:px-12">
+    <>
+      {/* Viewport-wide beige tint, fixed. z-40 keeps it under the nav
+          (z-50). Inert to interactions. */}
+      <motion.div
+        aria-hidden="true"
+        className="pointer-events-none fixed inset-0 z-40"
+        style={{
+          backgroundColor: TINT,
+          opacity: tintOpacity,
+          willChange: "opacity",
+        }}
+      />
+
+      <section
+        ref={rootRef}
+        id="newsletter"
+        className="relative w-full bg-bg py-[100px] md:py-[160px]"
+      >
+        {/* Content wrapper sits ABOVE the fixed beige tint (z-40), so
+            text and inputs render at full contrast while the tint
+            still acts on the section's background layer behind them. */}
+        <div className="relative z-[45] mx-auto max-w-frame px-6 md:px-12">
         <div className="grid grid-cols-12 gap-6 md:gap-8">
           {/* Section header */}
           <div className="col-span-12 flex items-baseline justify-between text-[11px] uppercase tracking-[0.22em] text-ink/60">
@@ -195,6 +231,7 @@ export default function Newsletter() {
           </div>
         </div>
       </div>
-    </section>
+      </section>
+    </>
   );
 }
