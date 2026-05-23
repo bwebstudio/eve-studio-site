@@ -19,21 +19,24 @@ const EASE = [0.22, 1, 0.36, 1];
  *  - compact : scroll-triggered header state, quietly condensed
  *
  * Amplitudes are deliberately small — this is identity, not a headline.
+ * Wordmark uses General Sans 500 with an Editorial italic `.` between
+ * "eve" and "studio", mirroring the footer wordmark so the brand reads
+ * as one mark across the site.
  */
 const wordVariants = {
   hidden: {
     opacity: 0,
     y: 6,
     scale: 1.05,
-    letterSpacing: "0.08em",
+    letterSpacing: "0.04em",
   },
   intro: {
     opacity: 1,
     y: 0,
-    scale: 1.04,
-    letterSpacing: "0.02em",
+    scale: 1.03,
+    letterSpacing: "0em",
     transition: {
-      duration: 1.1,
+      duration: 1.0,
       ease: EASE,
       staggerChildren: 0.02,
       delayChildren: 0,
@@ -43,15 +46,15 @@ const wordVariants = {
     opacity: 1,
     y: 0,
     scale: 1.0,
-    letterSpacing: "-0.01em",
-    transition: { duration: 0.85, ease: EASE },
+    letterSpacing: "-0.025em",
+    transition: { duration: 0.8, ease: EASE },
   },
   compact: {
     opacity: 1,
     y: -1,
-    scale: 0.88,
-    letterSpacing: "-0.018em",
-    transition: { duration: 0.55, ease: EASE },
+    scale: 0.9,
+    letterSpacing: "-0.03em",
+    transition: { duration: 0.5, ease: EASE },
   },
 };
 
@@ -141,7 +144,7 @@ export default function Logo({
       aria-label={ariaLabel}
       onClick={onClick}
       className={`flex-shrink-0 cursor-pointer text-[22px] leading-none ${className}`}
-      style={{ fontFamily: "var(--font-editorial)" }}
+      style={{ fontFamily: "var(--font-sans)", fontWeight: 500 }}
     >
       <span className="sr-only">{text}</span>
       <motion.span
@@ -159,7 +162,10 @@ export default function Logo({
           <motion.span
             key={`${ch}-${i}`}
             variants={letterVariants}
-            className={ch === "." ? "italic" : undefined}
+            // The "." between "eve" and "studio" stays Editorial italic
+            // — same signature used by the footer wordmark — so the mark
+            // reads as identity rather than a generic sans logotype.
+            className={ch === "." ? "font-editorial-italic" : undefined}
             style={{ display: "inline-block" }}
           >
             {ch === " " ? " " : ch}

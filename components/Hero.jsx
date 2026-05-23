@@ -1,21 +1,28 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion } from "framer-motion";
 import useLang from "@/lib/useLang";
 import useAppReady from "@/lib/useAppReady";
-import MaskReveal from "./MaskReveal";
 
 const VIDEOS = ["/video/video1.mp4", "/video/video2.mp4", "/video/video3.mp4"];
 const CYCLE_MS = 5200;
 const EASE = [0.22, 1, 0.36, 1];
 
+/**
+ * Asymmetric commercial hero — text on the left, contained video on
+ * the right. Matches the Kaiora reference the client signed off on:
+ * left column with eyebrow + 3-line headline + supporting copy +
+ * "Discover more ↗" CTA, right column with the cycling reel.
+ *
+ * Compared with the previous centred-text hero, this layout reads as
+ * direct and commercial rather than purely cinematic, which is the
+ * brief.
+ */
 export default function Hero() {
   const { t } = useLang();
   const { ready } = useAppReady();
   const videoRefs = useRef([]);
-  const stripRef = useRef(null);
-
   const [idx, setIdx] = useState(0);
 
   useEffect(() => {
@@ -38,162 +45,129 @@ export default function Hero() {
     return () => clearInterval(id);
   }, []);
 
-  // Scroll-linked dark overlay on the cinematic strip.
-  // Bell curve: the strip enters light, darkens to near-black as it
-  // centers in the viewport, then releases back to light as it exits.
-  // Offset uses "start center" so progress = 0 only when the strip's
-  // top has reached viewport center — gives the strip room to peek at
-  // the bottom of the first viewport on mobile without firing the
-  // overlay against the editorial header above.
-  const { scrollYProgress } = useScroll({
-    target: stripRef,
-    offset: ["start center", "end start"],
-  });
-  const overlayOpacity = useTransform(
-    scrollYProgress,
-    [0, 0.05, 0.25, 0.5, 0.75, 0.9],
-    [0, 0, 0.95, 0.9, 0.25, 0],
-    { clamp: true }
-  );
-  const imageScale = useTransform(scrollYProgress, [0, 1], [1.08, 1], { clamp: true });
-
-  const activeWord = t.hero.scenes[idx]?.word || "";
+  const h = t.hero;
 
   return (
-    <section id="top" className="relative w-full bg-bg text-ink">
-      {/* Fixed viewport-wide dark overlay. Scroll-driven: dims the
-          entire screen as the cinematic strip crosses the viewport,
-          then releases back to light. z-40 keeps it under the nav
-          (z-50) so the menu remains readable. */}
-      <motion.div
-        aria-hidden="true"
-        className="pointer-events-none fixed inset-0 z-40 bg-ink"
-        style={{ opacity: overlayOpacity, willChange: "opacity" }}
-      />
-
-      {/* ============================================================
-         Editorial top zone — minimal, centered, on light bg.
-         Natural content height; the strip is allowed to peek into
-         the first viewport on mobile. Overlay timing (above) keeps
-         the dim at 0 until the strip top crosses viewport center,
-         so the editorial header never darkens on first paint.
-         ============================================================ */}
-      <div className="relative pt-28 md:pt-36">
-        {/* Top meta row — 3 cols on desktop, center hidden on mobile
-            to avoid three crammed strings sharing a narrow row. */}
-        <div className="mx-auto grid max-w-frame grid-cols-12 items-baseline gap-4 px-6 text-[10px] uppercase tracking-[0.22em] text-ink/55 md:gap-8 md:px-12 md:text-[11px]">
-          <div className="col-span-6 md:col-span-4">
-            <MaskReveal onMount delay={0.35} duration={0.9}>{t.hero.meta}</MaskReveal>
-          </div>
-          <div className="hidden md:col-span-4 md:block md:text-center">
-            <MaskReveal onMount delay={0.45} duration={0.9}>{t.hero.tagline}</MaskReveal>
-          </div>
-          <div className="col-span-6 text-right tabular-nums md:col-span-4">
-            <MaskReveal onMount delay={0.55} duration={0.9}>
-              {`Reel ${String(idx + 1).padStart(2, "0")} / ${String(VIDEOS.length).padStart(2, "0")}`}
-            </MaskReveal>
-          </div>
-        </div>
-
-        {/* Centered editorial title block */}
-        <div className="mx-auto mt-24 flex max-w-frame flex-col items-center px-6 text-center md:mt-36 md:px-12">
-          <MaskReveal
-            onMount
-            delay={0.65}
-            duration={0.9}
-            innerClassName="text-ink/65"
-            innerStyle={{
-              fontFamily: "var(--font-neue)",
-              fontSize: "11px",
-              letterSpacing: "0.32em",
-              textTransform: "uppercase",
-            }}
-          >
-            {t.hero.kicker}
-          </MaskReveal>
-          <h1 className="mt-5 md:mt-7">
-            <MaskReveal
-              onMount
-              delay={0.85}
-              duration={1.25}
-              innerClassName="italic text-ink"
-              innerStyle={{
-                fontFamily: "var(--font-editorial)",
-                fontWeight: 200,
-                fontSize: "clamp(2.75rem, 9vw, 8.5rem)",
-                lineHeight: 1.02,
-                letterSpacing: "-0.03em",
-                display: "inline-block",
-              }}
-            >
-              {t.hero.title}
-            </MaskReveal>
-          </h1>
-        </div>
-
-        {/* Utility bar — "Fullscreen +" style. */}
-        <div className="mx-auto mt-20 max-w-frame px-6 md:mt-28 md:px-12">
-          <motion.div
-            className="flex items-center justify-between border-t border-ink/15 pt-5 text-[10px] uppercase tracking-[0.24em] text-ink/55 md:pt-6 md:text-[11px]"
-            initial={{ opacity: 0 }}
-            animate={ready ? { opacity: 1 } : { opacity: 0 }}
-            transition={{ duration: 0.9, ease: EASE, delay: 1.05 }}
-          >
-            <span>{t.hero.ctaWork}</span>
-            <motion.span
-              key={activeWord}
-              initial={{ opacity: 0, y: 6 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, ease: EASE }}
-              className="hidden tracking-[0.28em] text-ink/70 md:block"
-            >
-              ({activeWord.toLowerCase()})
-            </motion.span>
-            <span aria-hidden="true" className="text-base leading-none">+</span>
-          </motion.div>
-        </div>
-      </div>
-
-      {/* ============================================================
-         Cinematic strip — full-bleed, dark. Scroll-linked overlay
-         creates the color handoff into the next section.
-         ============================================================ */}
-      <div
-        ref={stripRef}
-        data-cursor="hero"
-        className="relative z-[45] mt-10 w-full overflow-hidden bg-ink md:mt-14"
-        style={{ height: "clamp(60vh, 85vh, 100svh)" }}
-      >
-        {/* Video layer — subtle scale from scroll for parallax-like drift */}
+    // The hero + the Clients band below should fit together in one
+    // viewport so the brand strip is visible without scrolling. We
+    // give the section min-h sized to (viewport − Clients band height)
+    // on desktop; mobile stacks naturally with no height constraint.
+    <section
+      id="top"
+      className="relative flex w-full flex-col bg-bg pt-24 text-ink md:min-h-[calc(100svh-80px)] md:pt-28 lg:pt-32"
+    >
+      <div className="mx-auto flex w-full max-w-frame flex-1 flex-col px-6 pb-10 md:px-10 md:pb-14 lg:px-12 lg:pb-16">
+        {/* Top meta row — tight 3-col rail, kept from the previous hero
+            for the editorial signature. */}
         <motion.div
-          className="absolute inset-0"
-          style={{ scale: imageScale, willChange: "transform" }}
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, ease: EASE, delay: 0.15 }}
+          className="grid grid-cols-12 items-baseline gap-4 text-[10px] uppercase tracking-[0.22em] text-ink/55 md:gap-8 md:text-[11px]"
         >
-          {VIDEOS.map((src, i) => (
-            <video
-              key={src}
-              ref={(el) => { videoRefs.current[i] = el; }}
-              src={src}
-              autoPlay={i === 0}
-              muted
-              playsInline
-              preload="auto"
-              aria-hidden="true"
-              className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-[900ms] ease-out ${i === idx ? "opacity-100" : "opacity-0"}`}
-            />
-          ))}
+          <span className="col-span-6 md:col-span-4">{h.meta}</span>
+          <span className="hidden md:col-span-4 md:block md:text-center">{h.tagline}</span>
+          <span className="col-span-6 text-right tabular-nums md:col-span-4">
+            {`Reel ${String(idx + 1).padStart(2, "0")} / ${String(VIDEOS.length).padStart(2, "0")}`}
+          </span>
         </motion.div>
 
-        {/* Bottom navigator */}
-        <a
-          href="#work"
-          data-cursor="cta"
-          data-magnetic="0.3"
-          className="absolute bottom-10 left-1/2 flex -translate-x-1/2 flex-col items-center gap-2 text-[10px] uppercase tracking-[0.3em] text-bg/85 transition-opacity duration-500 hover:text-bg md:bottom-14 md:text-[11px]"
-        >
-          <span>{t.hero.ctaWork}</span>
-          <span className="h-6 w-px bg-bg/40" aria-hidden="true" />
-        </a>
+        {/* Main 2-col block — text left, video right. Flex layout so
+            both columns stretch to the same height as the container
+            grows; the CTA sits at the bottom of the left column,
+            leaving clean breathing room above the Clients band. */}
+        <div className="mt-8 flex flex-1 flex-col gap-6 md:mt-10 md:flex-row md:gap-10 lg:gap-12">
+          {/* LEFT — text column */}
+          <div className="flex flex-col justify-between md:flex-1">
+            <div>
+              {/* All-sans headline (no editorial italic accent) — matches
+                  the Kaiora reference where the type is the focal point
+                  without flourishes. The italic signature lives in the
+                  footer wordmark and the logo ".", not in the headline. */}
+              <motion.h1
+                initial={{ opacity: 0, y: 32 }}
+                animate={ready ? { opacity: 1, y: 0 } : { opacity: 0, y: 32 }}
+                transition={{ duration: 0.95, ease: EASE, delay: 0.25 }}
+                className="text-ink"
+                style={{
+                  fontFamily: "var(--font-sans)",
+                  fontWeight: 500,
+                  fontSize: "clamp(2.5rem, 6vw, 5.5rem)",
+                  lineHeight: 1.0,
+                  letterSpacing: "-0.035em",
+                  willChange: "transform, opacity",
+                }}
+              >
+                <span className="block">{h.titleA}</span>
+                <span className="block">{h.titleAccent}</span>
+                <span className="block">{h.titleItalic}</span>
+                <span className="block">{h.titleB}</span>
+              </motion.h1>
+
+              <motion.p
+                initial={{ opacity: 0, y: 16 }}
+                animate={ready ? { opacity: 1, y: 0 } : { opacity: 0, y: 16 }}
+                transition={{ duration: 0.8, ease: EASE, delay: 0.55 }}
+                className="mt-6 max-w-[44ch] text-base text-ink/70 md:mt-8 md:text-[17px]"
+                style={{ lineHeight: 1.55 }}
+              >
+                {h.supporting}
+              </motion.p>
+            </div>
+
+            {/* CTA row */}
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={ready ? { opacity: 1, y: 0 } : { opacity: 0, y: 12 }}
+              transition={{ duration: 0.7, ease: EASE, delay: 0.75 }}
+              className="mt-8 flex items-center gap-6 md:mt-12"
+            >
+              <a
+                href="#about"
+                data-cursor="cta"
+                data-magnetic="0.2"
+                className="group inline-flex items-center gap-3 border-b border-ink pb-2 text-[11px] uppercase tracking-[0.22em] text-ink"
+              >
+                <span>{h.ctaDiscover}</span>
+                <span
+                  aria-hidden="true"
+                  className="text-sm leading-none transition-transform duration-500 group-hover:translate-x-1 group-hover:-translate-y-0.5"
+                >
+                  ↗
+                </span>
+              </a>
+            </motion.div>
+          </div>
+
+          {/* RIGHT — cycling reel, contained. */}
+          <motion.div
+            initial={{ opacity: 0, scale: 1.02 }}
+            animate={ready ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 1.02 }}
+            transition={{ duration: 1.1, ease: EASE, delay: 0.4 }}
+            data-cursor="media"
+            data-cursor-label="Reel"
+            className="relative aspect-[4/5] w-full overflow-hidden bg-ink md:aspect-auto md:flex-1 md:self-stretch"
+          >
+            {VIDEOS.map((src, i) => (
+              <video
+                key={src}
+                ref={(el) => { videoRefs.current[i] = el; }}
+                src={src}
+                autoPlay={i === 0}
+                muted
+                playsInline
+                preload="auto"
+                aria-hidden="true"
+                className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-[900ms] ease-out ${i === idx ? "opacity-100" : "opacity-0"}`}
+              />
+            ))}
+
+            {/* Subtle bottom-left reel marker */}
+            <div className="pointer-events-none absolute bottom-4 left-4 text-[10px] uppercase tracking-[0.28em] text-bg/85 md:bottom-5 md:left-5">
+              <span>(reel)</span>
+            </div>
+          </motion.div>
+        </div>
       </div>
     </section>
   );

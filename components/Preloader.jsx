@@ -11,7 +11,9 @@ import useAppReady from "@/lib/useAppReady";
 // parts along the wordmark's own axis, top panel rises and bottom
 // panel falls, revealing the home from the middle outward.
 
-const COUNT_DURATION = 2.5;
+// Counter tween — kept short so the preloader feels immediate.
+// Original was 2.5s, which read as slow for repeat visitors.
+const COUNT_DURATION = 1.0;
 
 const CROP_POSITIONS = [
   { top: "20px", left: "20px" },
@@ -86,10 +88,14 @@ export default function Preloader() {
       onComplete: () => setRemoved(true),
     });
 
-    // 1. Atmosphere — grain rises, crop marks snap in with a random stagger.
+    // Preloader timing — rewritten to be faster and more efficient.
+    // Target total runtime ~2.4s (was ~6s). Atmosphere, mark, counter
+    // and split now overlap aggressively instead of running in series.
+
+    // 1. Atmosphere — grain + crop marks snap in together at t=0.
     tl.to(
       grainRef.current,
-      { opacity: 0.08, duration: 1.2, ease: "power2.out" },
+      { opacity: 0.08, duration: 0.55, ease: "power2.out" },
       0
     );
     tl.to(
@@ -97,40 +103,38 @@ export default function Preloader() {
       {
         opacity: 0.45,
         scale: 1,
-        duration: 0.9,
+        duration: 0.45,
         ease: "expo.out",
-        stagger: { each: 0.07, from: "random" },
+        stagger: { each: 0.03, from: "random" },
       },
-      0.18
+      0.05
     );
 
-    // 2. Rails fade in from the edges.
+    // 2. Rails — fast fade with a short stagger.
     tl.to(
       topMetaRef.current,
-      { opacity: 0.72, y: 0, duration: 1.0, ease: "power3.out" },
-      0.35
+      { opacity: 0.72, y: 0, duration: 0.5, ease: "power3.out" },
+      0.1
     );
     tl.to(
       bottomMetaRef.current,
-      { opacity: 0.72, y: 0, duration: 1.0, ease: "power3.out" },
-      0.45
+      { opacity: 0.72, y: 0, duration: 0.5, ease: "power3.out" },
+      0.15
     );
 
-    // 3. Wordmark outline — center-out reveal. Vertical insets are
-    //    negative so the clip never cuts glyph ascenders/descenders
-    //    (the `d` in studio, italic `.`, etc.).
+    // 3. Wordmark outline — center-out reveal, brisker.
     tl.to(
       wordmarkOutlineRef.current,
       {
         clipPath: "inset(-0.2em 0% -0.2em 0%)",
         WebkitClipPath: "inset(-0.2em 0% -0.2em 0%)",
-        duration: 1.6,
+        duration: 0.8,
         ease: "expo.out",
       },
-      0.65
+      0.2
     );
 
-    // 4. Counter + hairline run alongside the outline draw.
+    // 4. Counter + hairline — run alongside the outline draw.
     const counterObj = { v: 0 };
     tl.to(
       counterObj,
@@ -140,7 +144,7 @@ export default function Preloader() {
         ease: "power2.inOut",
         onUpdate: () => setProgress(Math.floor(counterObj.v)),
       },
-      0.65
+      0.2
     );
     tl.to(
       progressBarRef.current,
@@ -149,22 +153,22 @@ export default function Preloader() {
         duration: COUNT_DURATION,
         ease: "power2.inOut",
       },
-      0.65
+      0.2
     );
 
-    // 5. Fill crossfades over the outline — the mark solidifies.
+    // 5. Fill crossfades over the outline — mark solidifies.
     tl.to(
       wordmarkFillRef.current,
-      { opacity: 1, duration: 0.75, ease: "power3.inOut" },
-      1.8
+      { opacity: 1, duration: 0.4, ease: "power3.inOut" },
+      0.9
     );
     tl.to(
       wordmarkOutlineRef.current,
-      { opacity: 0, duration: 0.6, ease: "power3.inOut" },
-      2.0
+      { opacity: 0, duration: 0.35, ease: "power3.inOut" },
+      1.0
     );
 
-    // 6. Tagline appears underneath (center-out wipe too, for rhyme).
+    // 6. Tagline appears underneath.
     tl.to(
       subtitleRef.current,
       {
@@ -172,31 +176,16 @@ export default function Preloader() {
         y: 0,
         clipPath: "inset(-0.25em 0% -0.25em 0%)",
         WebkitClipPath: "inset(-0.25em 0% -0.25em 0%)",
-        duration: 0.85,
+        duration: 0.5,
         ease: "expo.out",
       },
-      2.25
+      1.1
     );
 
-    // 7. Micro breath — a single inhale, quicker than before.
-    tl.to(
-      wordmarkWrapRef.current,
-      {
-        scale: 1.012,
-        duration: 0.35,
-        ease: "sine.inOut",
-        yoyo: true,
-        repeat: 1,
-        transformOrigin: "50% 50%",
-      },
-      2.9
-    );
+    // 7. Short hold so the mark is legible.
+    tl.to({}, { duration: 0.2 });
 
-    // 8. Short hold so the reader takes it in.
-    tl.to({}, { duration: 0.3 });
-
-    // 9. Fade secondary elements — the wordmark stays so it can
-    //    morph into the seam line without a gap in the sequence.
+    // 8. Fade secondary elements.
     tl.to(
       [
         topMetaRef.current,
@@ -208,57 +197,51 @@ export default function Preloader() {
       ],
       {
         opacity: 0,
-        duration: 0.55,
+        duration: 0.35,
         ease: "power3.inOut",
       }
     );
 
-    // 10. Hand off to the app behind.
+    // 9. Hand off to the app behind.
     tl.call(() => setReady(true));
 
-    // 11. Wordmark retracts to centre — the inverse of its entry.
-    //     The whole wrap's clip-path closes back to a vertical sliver
-    //     and its opacity fades. The mark "collapses" into the same
-    //     point the seam will grow out of.
+    // 10. Wordmark collapses to centre.
     tl.to(
       wordmarkWrapRef.current,
       {
         clipPath: "inset(-0.4em 50% -0.4em 50%)",
         WebkitClipPath: "inset(-0.4em 50% -0.4em 50%)",
         opacity: 0,
-        duration: 0.85,
+        duration: 0.5,
         ease: "expo.inOut",
       }
     );
 
-    // 12. Seam grows out of the same centre, mirroring the wordmark's
-    //     collapse. Baton pass: as the mark closes to the point, the
-    //     line opens from the point.
+    // 11. Seam grows out of the same centre.
     tl.to(
       seamRef.current,
-      { scaleX: 1, opacity: 0.85, duration: 0.85, ease: "expo.inOut" },
+      { scaleX: 1, opacity: 0.85, duration: 0.5, ease: "expo.inOut" },
       "<"
     );
 
-    // 13. Horizontal split — the two panels part along the central
-    //     axis. Symmetric motion, still generous enough to breathe.
+    // 12. Horizontal split — quicker, still cinematic.
     tl.to(
       topPanelRef.current,
-      { y: "-100%", duration: 1.2, ease: "expo.inOut" },
-      "+=0.1"
+      { y: "-100%", duration: 0.75, ease: "expo.inOut" },
+      "+=0.05"
     );
     tl.to(
       bottomPanelRef.current,
-      { y: "100%", duration: 1.2, ease: "expo.inOut" },
+      { y: "100%", duration: 0.75, ease: "expo.inOut" },
       "<"
     );
     tl.to(
       seamRef.current,
-      { opacity: 0, duration: 0.5, ease: "power2.out" },
-      "<0.15"
+      { opacity: 0, duration: 0.3, ease: "power2.out" },
+      "<0.1"
     );
 
-    tl.to(rootRef.current, { opacity: 0, duration: 0.15 });
+    tl.to(rootRef.current, { opacity: 0, duration: 0.1 });
 
     return () => tl.kill();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -268,17 +251,17 @@ export default function Preloader() {
   if (removed) return null;
 
   const wordmarkStyle = {
-    fontFamily: "var(--font-editorial, serif)",
-    fontWeight: 200,
-    fontSize: "clamp(3.5rem, 11vw, 9.5rem)",
+    fontFamily: "var(--font-sans, var(--font-neue, system-ui, sans-serif))",
+    fontWeight: 500,
+    fontSize: "clamp(3.25rem, 10vw, 8.75rem)",
     lineHeight: 0.95,
-    letterSpacing: "-0.04em",
+    letterSpacing: "-0.045em",
     whiteSpace: "nowrap",
     userSelect: "none",
   };
 
   const metaRail = {
-    fontFamily: "var(--font-neue, system-ui, sans-serif)",
+    fontFamily: "var(--font-sans, var(--font-neue, system-ui, sans-serif))",
     fontSize: "11px",
     textTransform: "uppercase",
     letterSpacing: "0.3em",
@@ -333,7 +316,7 @@ export default function Preloader() {
           left: 0,
           right: 0,
           height: "1px",
-          background: "#f7f5f2",
+          background: "#efeae0",
           opacity: 0,
           transform: "scaleX(0)",
           transformOrigin: "50% 50%",
@@ -374,8 +357,8 @@ export default function Preloader() {
           }}
         >
           <svg width="12" height="12" viewBox="0 0 12 12">
-            <line x1="0" y1="6" x2="12" y2="6" stroke="#f7f5f2" strokeWidth="1" />
-            <line x1="6" y1="0" x2="6" y2="12" stroke="#f7f5f2" strokeWidth="1" />
+            <line x1="0" y1="6" x2="12" y2="6" stroke="#efeae0" strokeWidth="1" />
+            <line x1="6" y1="0" x2="6" y2="12" stroke="#efeae0" strokeWidth="1" />
           </svg>
         </div>
       ))}
@@ -385,7 +368,7 @@ export default function Preloader() {
         style={{
           position: "absolute",
           inset: 0,
-          color: "#f7f5f2",
+          color: "#efeae0",
           pointerEvents: "none",
         }}
       >
@@ -428,13 +411,21 @@ export default function Preloader() {
                 ...wordmarkStyle,
                 display: "block",
                 color: "transparent",
-                WebkitTextStroke: "1px #f7f5f2",
+                WebkitTextStroke: "1px #efeae0",
                 clipPath: "inset(-0.2em 50% -0.2em 50%)",
                 WebkitClipPath: "inset(-0.2em 50% -0.2em 50%)",
               }}
             >
               eve
-              <span style={{ fontStyle: "italic" }}>.</span>
+              <span
+                style={{
+                  fontFamily: "var(--font-editorial, serif)",
+                  fontStyle: "italic",
+                  fontWeight: 300,
+                }}
+              >
+                .
+              </span>
               studio
             </span>
             <span
@@ -444,26 +435,34 @@ export default function Preloader() {
                 position: "absolute",
                 top: 0,
                 left: 0,
-                color: "#f7f5f2",
+                color: "#efeae0",
                 opacity: 0,
               }}
             >
               eve
-              <span style={{ fontStyle: "italic" }}>.</span>
+              <span
+                style={{
+                  fontFamily: "var(--font-editorial, serif)",
+                  fontStyle: "italic",
+                  fontWeight: 300,
+                }}
+              >
+                .
+              </span>
               studio
             </span>
           </div>
 
-          {/* Tagline — editorial italic, spaced caps */}
+          {/* Tagline — kept editorial italic as accent over General Sans. */}
           <div
             ref={subtitleRef}
             style={{
-              marginTop: "clamp(1rem, 1.8vw, 1.6rem)",
+              marginTop: "clamp(0.9rem, 1.6vw, 1.4rem)",
               fontFamily: "var(--font-editorial, serif)",
               fontStyle: "italic",
               fontWeight: 300,
-              fontSize: "clamp(0.8rem, 1.1vw, 1.05rem)",
-              letterSpacing: "0.34em",
+              fontSize: "clamp(0.78rem, 1vw, 1rem)",
+              letterSpacing: "0.32em",
               textTransform: "uppercase",
               opacity: 0,
               transform: "translateY(10px)",
@@ -471,7 +470,7 @@ export default function Preloader() {
               WebkitClipPath: "inset(-0.25em 50% -0.25em 50%)",
             }}
           >
-            The Creative Studio
+            Brands &amp; People
           </div>
         </div>
 
@@ -525,7 +524,7 @@ export default function Preloader() {
             left: 0,
             width: "100%",
             height: "1px",
-            background: "rgba(247, 245, 242, 0.85)",
+            background: "rgba(239, 234, 224, 0.85)",
             transform: "scaleX(0)",
             transformOrigin: "0 50%",
           }}

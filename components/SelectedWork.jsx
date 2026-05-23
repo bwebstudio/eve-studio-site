@@ -119,33 +119,25 @@ function ProjectCard({ p, layout }) {
   );
 }
 
+// Compact 2x2 grid — the full archive lives behind the Work overlay
+// and the per-category routes, so the home only shows a tight proof
+// of recent work rather than the full archive.
 const GRID = [
-  { span: "col-span-12 md:col-span-7", aspect: "aspect-[4/5]" },                               // Casa Lumen
-  { span: "col-span-12 md:col-span-5 md:col-start-8 md:mt-32", aspect: "aspect-[4/5]" },       // Ornela
-  { span: "col-span-12 md:col-span-5 md:col-start-2", aspect: "aspect-[4/5]" },                // Amaranta
-  { span: "col-span-12 md:col-span-4 md:col-start-9 md:mt-20", aspect: "aspect-[4/5]" },       // Hotel Varela
-  { span: "col-span-12 md:col-span-6 md:col-start-3", aspect: "aspect-[4/5]" },                // Velvet Room
-  { span: "col-span-12 md:col-span-5 md:col-start-2 md:mt-12", aspect: "aspect-[4/5]" },       // Atelier Norte
+  { span: "col-span-12 md:col-span-6", aspect: "aspect-[4/5]" },                             // Casa Lumen
+  { span: "col-span-12 md:col-span-5 md:col-start-8 md:mt-16", aspect: "aspect-[4/5]" },     // Ornela
+  { span: "col-span-12 md:col-span-5 md:col-start-2", aspect: "aspect-[4/5]" },              // Amaranta
+  { span: "col-span-12 md:col-span-5 md:col-start-8 md:mt-12", aspect: "aspect-[4/5]" },     // Hotel Varela
 ];
 
-const LINE_STYLES = {
-  huge: { fontSize: "clamp(5rem, 16vw, 14rem)", lineHeight: 0.9, letterSpacing: "-0.035em", whiteSpace: "nowrap", maxWidth: "88vw" },
-  small: { fontSize: "clamp(2.25rem, 5.5vw, 4.5rem)", lineHeight: 1.05, letterSpacing: "-0.02em" },
-  large: { fontSize: "clamp(3rem, 7.5vw, 6.5rem)", lineHeight: 0.95, letterSpacing: "-0.03em" },
-};
-
-const LINE_GRID = [
-  "col-span-12",
-  "col-span-12 md:col-span-9 mt-1",
-  "col-span-12 md:col-span-6 md:col-start-7 mt-14 md:mt-24",
-  "col-span-12 md:col-span-6 md:col-start-7",
-];
-
-export default function SelectedWork() {
+export default function SelectedWork({ onOpenOverlay }) {
   const { t } = useLang();
   const rootRef = useRef(null);
   const headingRef = useRef(null);
-  const headingInView = useInView(headingRef, { once: true, amount: 0.2, margin: "0px 0px -5% 0px" });
+  const headingInView = useInView(headingRef, {
+    once: true,
+    amount: 0.25,
+    margin: "0px 0px -5% 0px",
+  });
   useEffect(() => {
     if (typeof window === "undefined") return;
     gsap.registerPlugin(ScrollTrigger);
@@ -155,47 +147,67 @@ export default function SelectedWork() {
     return () => ctx.revert();
   }, []);
 
-  return (
-    <section ref={rootRef} id="work" className="relative w-full overflow-hidden bg-bg py-[100px] md:py-[160px]">
-      <div className="mx-auto max-w-frame px-6 md:px-12">
-        <div className="grid grid-cols-12 gap-6 md:gap-8">
-          <div className="col-span-12 flex items-baseline justify-between text-[11px] uppercase tracking-[0.22em] text-ink/60">
-            <span>{t.work.sectionLabel}</span>
-            <span>{t.work.sectionIndex}</span>
-          </div>
+  const w = t.work;
+  const projects = (w.projects || []).slice(0, 4);
 
-          <motion.h2
-            ref={headingRef}
-            className="col-span-12 mt-12 grid grid-cols-12 gap-x-6 md:mt-20 md:gap-x-8"
-            initial={{ opacity: 0, y: 80 }}
-            animate={headingInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 80 }}
-            transition={{ duration: 1.4, ease: EASE }}
-            style={{ willChange: "transform, opacity" }}
+  return (
+    <section
+      ref={rootRef}
+      id="work"
+      className="relative w-full scroll-mt-24 overflow-hidden border-t border-ink/10 bg-bg pt-12 pb-14 md:pt-16 md:pb-20 lg:pt-20 lg:pb-24"
+    >
+      <div className="mx-auto max-w-frame px-6 md:px-10 lg:px-12">
+        {/* Header row — Kaiora pattern: eyebrow left + CTA right */}
+        <div data-reveal className="flex items-baseline justify-between gap-6">
+          <p
+            className="text-[11px] uppercase tracking-[0.24em] text-ink"
+            style={{ fontWeight: 500 }}
           >
-            <span className="sr-only">{t.work.srOnly}</span>
-            {t.work.lines.map((line, i) => (
-              <span
-                key={i}
-                aria-hidden="true"
-                className={`font-editorial text-ink ${line.italic ? "italic text-ink/85" : ""} ${LINE_GRID[i] || "col-span-12"}`}
-                style={LINE_STYLES[line.size] || LINE_STYLES.large}
-              >
-                {line.text}
+            {w.eyebrow}
+          </p>
+          {onOpenOverlay ? (
+            <button
+              type="button"
+              onClick={onOpenOverlay}
+              data-cursor="cta"
+              data-magnetic="0.2"
+              className="group inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.22em] text-ink"
+            >
+              <span className="border-b border-ink pb-1">
+                {w.categoriesHeading}
               </span>
-            ))}
-          </motion.h2>
+              <span
+                aria-hidden="true"
+                className="text-sm leading-none transition-transform duration-500 group-hover:translate-x-1 group-hover:-translate-y-0.5"
+              >
+                ↗
+              </span>
+            </button>
+          ) : (
+            <a
+              href="#contact"
+              data-cursor="cta"
+              className="group inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.22em] text-ink"
+            >
+              <span className="border-b border-ink pb-1">{w.footerCta}</span>
+            </a>
+          )}
         </div>
 
-        <div className="mt-16 grid grid-cols-12 gap-6 md:mt-24 md:gap-8">
-          {t.work.projects.map((p, i) => {
+        {/* Compact 2x2 archive proof */}
+        <div className="mt-8 grid grid-cols-12 gap-6 md:mt-10 md:gap-8">
+          {projects.map((p, i) => {
             const layout = GRID[i] || GRID[0];
             return <ProjectCard key={p.index} p={p} layout={layout} />;
           })}
         </div>
 
-        <div className="mt-20 flex items-center justify-between border-t border-ink/10 pt-8 text-[12px] uppercase tracking-[0.18em] text-ink/60 md:mt-28">
-          <span>{t.work.footer}</span>
-          <a href="#contact" className="link-underline text-ink">{t.work.footerCta}</a>
+        {/* Footer row */}
+        <div className="mt-12 flex items-center justify-between border-t border-ink/10 pt-5 text-[11px] uppercase tracking-[0.22em] text-ink/55 md:mt-16 md:pt-6">
+          <span>{w.footer}</span>
+          <a href="#contact" className="link-underline text-ink">
+            {w.footerCta}
+          </a>
         </div>
       </div>
     </section>

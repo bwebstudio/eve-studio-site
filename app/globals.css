@@ -55,10 +55,24 @@
 :root {
   --font-editorial: "Editorial New";
   --font-neue: "Neue Montreal";
-  --color-bg: #f7f5f2;
+  --font-sans: "General Sans";
+  /* Warm cream background — matches the Kaiora reference. Slightly
+     more saturated than the previous off-white (#F7F5F2) so the site
+     reads as warm/editorial paper rather than digital grey-white. */
+  --color-bg: #efeae0;
   --color-ink: #111111;
   --color-secondary: #bfb8af;
   --color-accent: #e6dfd7;
+  /* Sticky-header offset for hash links. Lenis + native scroll both
+     respect scroll-padding-top, so a click on a #section lands with
+     the header clear of its title. Mobile uses a tighter offset. */
+  scroll-padding-top: 88px;
+}
+
+@media (max-width: 768px) {
+  :root {
+    scroll-padding-top: 72px;
+  }
 }
 
 * {
@@ -70,9 +84,10 @@ html,
 body {
   background: var(--color-bg);
   color: var(--color-ink);
-  font-family: var(--font-neue), system-ui, sans-serif;
+  font-family: var(--font-sans), var(--font-neue), system-ui, sans-serif;
   font-weight: 400;
-  line-height: 1.6;
+  line-height: 1.55;
+  letter-spacing: -0.005em;
 }
 
 h1,
@@ -81,19 +96,29 @@ h3,
 h4,
 h5,
 h6 {
+  font-family: var(--font-sans), var(--font-neue), system-ui, sans-serif;
+  font-weight: 500;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+}
+
+/* Editorial italic accent — used inline as a flourish on key words
+   inside otherwise-sans headlines. The base typography is General
+   Sans; this helper keeps the editorial serif available where it
+   genuinely adds value (italicised emphasis words). */
+.font-editorial,
+em.font-editorial-italic,
+.font-editorial-italic {
   font-family: var(--font-editorial), serif;
-  font-weight: 200;
-  line-height: 1.1;
-  letter-spacing: -0.01em;
 }
 
 p {
-  line-height: 1.6;
+  line-height: 1.55;
 }
 
 ::selection {
   background: #111111;
-  color: #f7f5f2;
+  color: #efeae0;
 }
 
 /* Lenis smooth scroll */
@@ -252,7 +277,7 @@ body.cursor-active * {
 .cursor-dot {
   width: 5px;
   height: 5px;
-  background: #f7f5f2;
+  background: #efeae0;
   opacity: 0;
   transition:
     width 0.35s cubic-bezier(0.22, 1, 0.36, 1),
@@ -266,7 +291,7 @@ body.cursor-active * {
   justify-content: center;
   width: 36px;
   height: 36px;
-  border: 1px solid rgba(247, 245, 242, 0.7);
+  border: 1px solid rgba(239, 234, 224, 0.7);
   background: transparent;
   opacity: 0;
   transition:
@@ -284,7 +309,7 @@ body.cursor-active * {
   font-weight: 500;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: #f7f5f2;
+  color: #efeae0;
   opacity: 0;
   transform: scale(0.85);
   transition:
@@ -299,7 +324,7 @@ body.cursor-active * {
 .cursor-root.is-hover .cursor-ring {
   width: 56px;
   height: 56px;
-  border-color: rgba(247, 245, 242, 0.95);
+  border-color: rgba(239, 234, 224, 0.95);
 }
 .cursor-root.is-hover .cursor-dot {
   width: 3px;
@@ -311,7 +336,7 @@ body.cursor-active * {
   width: 84px;
   height: 84px;
   border-color: transparent;
-  background: rgba(247, 245, 242, 0.16);
+  background: rgba(239, 234, 224, 0.16);
 }
 .cursor-root.is-cta .cursor-dot {
   opacity: 0;
@@ -320,7 +345,7 @@ body.cursor-active * {
 .cursor-root.is-media .cursor-ring {
   width: 96px;
   height: 96px;
-  border-color: rgba(247, 245, 242, 0.75);
+  border-color: rgba(239, 234, 224, 0.75);
 }
 .cursor-root.is-media .cursor-label {
   opacity: 1;
@@ -332,7 +357,7 @@ body.cursor-active * {
 
 /* Subtle persistent chromatic shift while over the hero. */
 .cursor-root.is-hero .cursor-ring {
-  border-color: rgba(247, 245, 242, 0.92);
+  border-color: rgba(239, 234, 224, 0.92);
   box-shadow:
     1.5px 0 0 rgba(255, 40, 90, 0.45),
     -1.5px 0 0 rgba(0, 220, 240, 0.45);
@@ -353,7 +378,7 @@ body.cursor-active * {
     box-shadow:
       5px 0 0 rgba(255, 40, 90, 0.9),
       -5px 0 0 rgba(0, 220, 240, 0.9);
-    border-color: rgba(247, 245, 242, 1);
+    border-color: rgba(239, 234, 224, 1);
   }
   50% {
     box-shadow:

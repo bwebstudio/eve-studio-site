@@ -18,7 +18,7 @@ export const metadata = {
 };
 
 export const viewport = {
-  themeColor: "#F7F5F2",
+  themeColor: "#EFEAE0",
   width: "device-width",
   initialScale: 1,
 };
@@ -26,6 +26,18 @@ export const viewport = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en" className="bg-bg">
+      <head>
+        {/* General Sans is the primary editorial sans, served from
+            Fontshare's free CDN. Preconnect first so the request can
+            start while HTML is still parsing. Replace with a self-hosted
+            woff2 build before going to production. */}
+        <link rel="preconnect" href="https://api.fontshare.com" crossOrigin="" />
+        <link rel="preconnect" href="https://cdn.fontshare.com" crossOrigin="" />
+        <link
+          rel="stylesheet"
+          href="https://api.fontshare.com/v2/css?f[]=general-sans@200,300,400,500,600,700&display=swap"
+        />
+      </head>
       <body className="bg-bg text-ink antialiased selection:bg-ink selection:text-bg">
         <Providers>
           <SmoothScroll />

@@ -5,8 +5,22 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { revealOnScroll } from "@/lib/animations";
 import useLang from "@/lib/useLang";
-import MaskReveal from "./MaskReveal";
+import TransitionLink from "./TransitionLink";
 
+const SERVICE_HREF = {
+  events: "/work/events",
+  "social-media": "/work/social-media",
+  "photo-video": "/work/photo-video",
+};
+
+/**
+ * "WHAT WE DO" — Kaiora-style services strip.
+ *
+ * Section header is a single row: eyebrow on the left + "VIEW ALL
+ * SERVICES ↗" on the right, divided by a hairline rule. Below, a
+ * three-up grid of cards: image on top (no overlay), label and
+ * tagline below — clean and commercial.
+ */
 export default function Services() {
   const { t } = useLang();
   const rootRef = useRef(null);
@@ -14,97 +28,103 @@ export default function Services() {
   useEffect(() => {
     if (typeof window === "undefined") return;
     gsap.registerPlugin(ScrollTrigger);
-    const ctx = gsap.context(() => { revealOnScroll(rootRef.current); }, rootRef);
+    const ctx = gsap.context(() => {
+      revealOnScroll(rootRef.current);
+    }, rootRef);
     return () => ctx.revert();
   }, []);
 
   return (
-    <section ref={rootRef} id="services" className="relative w-full bg-ink py-[80px] text-bg md:py-[120px] lg:py-[160px]">
+    <section
+      ref={rootRef}
+      id="services"
+      className="relative w-full scroll-mt-24 border-t border-ink/10 bg-bg pt-12 pb-14 md:pt-16 md:pb-20 lg:pt-20 lg:pb-24"
+    >
       <div className="mx-auto max-w-frame px-6 md:px-10 lg:px-12">
-        <div className="flex items-baseline justify-between text-[10px] uppercase tracking-[0.22em] text-bg/60 md:text-[11px]">
-          <span>{t.services.sectionLabel}</span>
-          <span>{t.services.sectionIndex}</span>
-        </div>
-
-        <MaskReveal
-          className="mt-10 max-w-[18ch] md:mt-14 lg:mt-16 lg:max-w-[20ch]"
-          innerClassName="text-bg"
-          innerStyle={{
-            fontFamily: "var(--font-editorial)",
-            fontWeight: 300,
-            fontSize: "clamp(2.25rem, 7vw, 6rem)",
-            lineHeight: 1.05,
-            letterSpacing: "-0.025em",
-          }}
-          duration={1.15}
-          maskColor="#0B0B0B"
+        {/* Header row — Kaiora compact pattern: eyebrow left + CTA right
+            on one baseline, both at the same small caps size. */}
+        <div
+          data-reveal
+          className="flex items-baseline justify-between gap-6"
         >
-          {t.services.headlineA} {t.services.headlineB}{" "}
-          <em className="font-editorial-italic">{t.services.headlineItalic}</em>.
-        </MaskReveal>
-
-        <div className="mt-14 flex flex-col md:mt-20 lg:mt-24">
-          {t.services.items.map((s) => (
-            <article
-              key={s.index}
-              data-reveal
-              className="grid grid-cols-1 gap-6 border-t border-bg/15 py-10 md:grid-cols-[1fr_1fr] md:gap-10 md:py-14 lg:gap-20 lg:py-20"
+          <p
+            className="text-[11px] uppercase tracking-[0.24em] text-ink"
+            style={{ fontWeight: 500 }}
+          >
+            {t.services.eyebrow}
+          </p>
+          <TransitionLink
+            href="/#contact"
+            data-cursor="cta"
+            className="group inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.22em] text-ink"
+          >
+            <span className="border-b border-ink pb-1">{t.services.viewAll}</span>
+            <span
+              aria-hidden="true"
+              className="text-sm leading-none transition-transform duration-500 group-hover:translate-x-1 group-hover:-translate-y-0.5"
             >
-              <div>
-                <p className="text-[10px] uppercase tracking-[0.22em] text-bg/50 md:text-[11px]">
-                  {s.index}
-                </p>
-                <MaskReveal
-                  className="mt-3 md:mt-5"
-                  innerClassName="text-bg"
-                  innerStyle={{
-                    fontFamily: "var(--font-editorial)",
-                    fontWeight: 300,
-                    fontSize: "clamp(2.25rem, 6.5vw, 5.5rem)",
-                    lineHeight: 1.05,
-                    letterSpacing: "-0.02em",
-                  }}
-                  duration={1.05}
-                  maskColor="#0B0B0B"
-                >
-                  {s.nameStart}{" "}
-                  <em className="font-editorial-italic">{s.nameItalic}</em>
-                </MaskReveal>
-              </div>
-
-              <div className="flex flex-col gap-8 md:gap-10 md:pt-2 lg:pt-3">
-                <ul
-                  className="space-y-3 text-[15px] text-bg/85 md:space-y-3.5 md:text-base lg:text-lg"
-                  style={{ lineHeight: 1.6 }}
-                >
-                  {s.list.map((item) => (
-                    <li key={item} className="flex items-baseline gap-3">
-                      <span className="h-[1px] w-4 flex-shrink-0 translate-y-[-4px] bg-bg/40" />
-                      <span>{item}</span>
-                    </li>
-                  ))}
-                </ul>
-                <p
-                  className="max-w-[48ch] text-[13px] text-bg/60 md:text-sm"
-                  style={{ lineHeight: 1.65 }}
-                >
-                  {s.note}
-                </p>
-              </div>
-            </article>
-          ))}
-          <div className="h-[1px] w-full bg-bg/15" />
+              ↗
+            </span>
+          </TransitionLink>
         </div>
 
-        <div className="mt-14 overflow-hidden py-6 text-bg/80 md:mt-20 md:py-8 lg:mt-24">
-          <div
-            className="marquee font-editorial italic"
-            style={{ fontSize: "clamp(2.5rem, 6vw, 5rem)" }}
-          >
-            <span>{t.services.marquee}</span>
-            <span>{t.services.marquee}</span>
-            <span>{t.services.marquee}</span>
-          </div>
+        {/* Three image cards — image on top, label and tagline below */}
+        <div className="mt-8 grid grid-cols-1 gap-x-6 gap-y-10 md:mt-10 md:grid-cols-3 md:gap-x-6 lg:gap-x-8">
+          {t.services.items.map((s) => {
+            const href = SERVICE_HREF[s.key] || "/#work";
+            return (
+              <TransitionLink
+                key={s.key}
+                href={href}
+                data-cursor="media"
+                data-cursor-label="View"
+                data-reveal
+                className="group block"
+              >
+                {/* Image — clean, no overlay */}
+                <div className="relative aspect-[4/3] w-full overflow-hidden bg-ink/5 md:aspect-[5/4]">
+                  <img
+                    src={s.image}
+                    alt={s.name}
+                    loading="lazy"
+                    decoding="async"
+                    draggable="false"
+                    className="absolute inset-0 h-full w-full object-cover transition-transform duration-[1100ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.04]"
+                  />
+                </div>
+
+                {/* Label + tagline below image */}
+                <div className="mt-4 flex items-start justify-between gap-4">
+                  <div className="flex-1">
+                    <h3
+                      className="text-ink"
+                      style={{
+                        fontFamily: "var(--font-sans)",
+                        fontWeight: 500,
+                        fontSize: "clamp(0.95rem, 1.1vw, 1.05rem)",
+                        letterSpacing: "0.04em",
+                        textTransform: "uppercase",
+                      }}
+                    >
+                      {s.name}
+                    </h3>
+                    <p
+                      className="mt-2 max-w-[34ch] text-[13px] text-ink/65 md:text-[14px]"
+                      style={{ lineHeight: 1.5 }}
+                    >
+                      {s.tagline}
+                    </p>
+                  </div>
+                  <span
+                    aria-hidden="true"
+                    className="text-base leading-none text-ink/70 transition-transform duration-500 group-hover:translate-x-1 group-hover:-translate-y-1"
+                  >
+                    ↗
+                  </span>
+                </div>
+              </TransitionLink>
+            );
+          })}
         </div>
       </div>
     </section>

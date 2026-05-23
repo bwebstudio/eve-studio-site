@@ -7,7 +7,7 @@ import { gsap } from "gsap";
 import useLang from "@/lib/useLang";
 import Logo from "./Logo";
 
-export default function MobileMenu({ isOpen, onClose }) {
+export default function MobileMenu({ isOpen, onClose, onOpenWorkOverlay }) {
   const { t } = useLang();
   const overlayRef = useRef(null);
   const backgroundRef = useRef(null);
@@ -64,8 +64,25 @@ export default function MobileMenu({ isOpen, onClose }) {
           if (hash) {
             pendingHashRef.current = null;
             const target = document.getElementById(hash);
-            if (target) target.scrollIntoView({ behavior: "auto" });
-            else window.scrollTo(0, scrollLockYRef.current || 0);
+            if (target) {
+              // Restore scroll position first so Lenis starts from a
+              // sensible origin, then let Lenis interpolate to the
+              // target with the header offset applied.
+              window.scrollTo(0, scrollLockYRef.current || 0);
+              const lenis = window.__lenis;
+              const offset = window.matchMedia("(max-width: 768px)").matches
+                ? -72
+                : -88;
+              if (lenis) {
+                requestAnimationFrame(() => {
+                  lenis.scrollTo(target, { offset, duration: 0.9 });
+                });
+              } else {
+                target.scrollIntoView({ behavior: "smooth", block: "start" });
+              }
+            } else {
+              window.scrollTo(0, scrollLockYRef.current || 0);
+            }
           } else {
             window.scrollTo(0, scrollLockYRef.current || 0);
             previousFocusRef.current?.focus?.();
@@ -102,11 +119,26 @@ export default function MobileMenu({ isOpen, onClose }) {
     document.body.style.right = "";
   };
 
-  const handleLinkClick = (e) => {
-    const href = e.currentTarget.getAttribute("href") || "";
-    if (href.startsWith("#")) {
+  const handleLinkClick = (item) => (e) => {
+    // Work item opens the editorial overlay rather than navigating.
+    if (item?.kind === "work-overlay" && onOpenWorkOverlay) {
       e.preventDefault();
-      pendingHashRef.current = href.slice(1);
+      resetBodyScrollLock();
+      onOpenWorkOverlay();
+      return;
+    }
+
+    const href = e.currentTarget.getAttribute("href") || "";
+    if (href.startsWith("/#") || href.startsWith("#")) {
+      // Same-page hash: close the menu and let the post-close handler
+      // run the scrollIntoView so the section lands under the header.
+      const hash = href.startsWith("/#") ? href.slice(2) : href.slice(1);
+      // Only intercept on the home; cross-page hash links should
+      // navigate normally (TransitionLink would handle that anyway).
+      if (typeof window !== "undefined" && window.location.pathname === "/") {
+        e.preventDefault();
+        pendingHashRef.current = hash;
+      }
     }
     resetBodyScrollLock();
     onClose();
@@ -126,7 +158,7 @@ export default function MobileMenu({ isOpen, onClose }) {
       style={{ display: "none", backgroundColor: "#0B0B0B" }}
     >
       <div ref={backgroundRef} aria-hidden="true" className="pointer-events-none absolute inset-0 flex items-center justify-center">
-        <span className="font-editorial italic" style={{ color: "rgba(247, 245, 242, 0.055)", fontSize: "clamp(20rem, 140vw, 54rem)", lineHeight: 0.85, letterSpacing: "-0.05em", whiteSpace: "nowrap" }}>
+        <span className="font-editorial italic" style={{ color: "rgba(239, 234, 224, 0.055)", fontSize: "clamp(20rem, 140vw, 54rem)", lineHeight: 0.85, letterSpacing: "-0.05em", whiteSpace: "nowrap" }}>
           eve
         </span>
       </div>
@@ -150,7 +182,20 @@ export default function MobileMenu({ isOpen, onClose }) {
 
       <nav ref={navRef} aria-label="Primary" className="relative z-10 flex flex-1 flex-col justify-center gap-1 px-6">
         {t.mobileMenu.links.map((item, i) => (
-          <Link key={item.href} href={item.href} onClick={handleLinkClick} className="group flex items-baseline gap-4" style={{ fontFamily: "var(--font-editorial)", fontWeight: 200, fontSize: "clamp(3.25rem, 11vw, 6.5rem)", lineHeight: 1, letterSpacing: "-0.03em", whiteSpace: "nowrap" }}>
+          <Link
+            key={item.href + item.label}
+            href={item.href}
+            onClick={handleLinkClick(item)}
+            className="group flex items-baseline gap-4"
+            style={{
+              fontFamily: "var(--font-sans)",
+              fontWeight: 500,
+              fontSize: "clamp(2.75rem, 9.5vw, 5.5rem)",
+              lineHeight: 1,
+              letterSpacing: "-0.035em",
+              whiteSpace: "nowrap",
+            }}
+          >
             <span aria-hidden="true" className="relative top-[-0.8em] font-sans text-[10px] uppercase tracking-[0.24em] text-bg/40">0{i + 1}</span>
             <span className="relative inline-block transition-transform duration-500 ease-out group-hover:translate-x-3 group-focus-visible:translate-x-3 group-active:translate-x-2">{item.label}</span>
             <span aria-hidden="true" className="relative top-[-0.28em] -translate-x-2 font-sans text-[0.38em] text-bg/80 opacity-0 transition-all duration-500 ease-out group-hover:translate-x-0 group-hover:opacity-100 group-focus-visible:translate-x-0 group-focus-visible:opacity-100">→</span>

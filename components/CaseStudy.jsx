@@ -1,107 +1,104 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
+import { useEffect, useRef } from "react";
 import { motion, useInView } from "framer-motion";
-import TransitionLink from "./TransitionLink";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { revealOnScroll } from "@/lib/animations";
 import useLang from "@/lib/useLang";
-import projects, { PROJECT_ORDER, PROJECT_IMAGES } from "@/lib/projects";
-import MaskReveal from "./MaskReveal";
-import ImageReveal from "./ImageReveal";
+import projects, {
+  PROJECT_ORDER,
+  PROJECT_IMAGES,
+  PROJECTS_BY_CATEGORY,
+} from "@/lib/projects";
+import TransitionLink from "./TransitionLink";
 
-const SECTION_EASE = [0.33, 1, 0.68, 1];
-const SECTION_DURATION = 1.8;
+const EASE = [0.22, 1, 0.36, 1];
 
-// A single row (text column + image column) for the project body. Both
-// columns share one useInView observer and both translate in from y: travel
-// with the same duration/ease — so the text lands WITH its image instead
-// of firing on its own GSAP trigger.
-function ProjectSection({ index, section, src, projectTitle, headingStyle }) {
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true, amount: 0.2 });
-
-  const [travel, setTravel] = useState(900);
-  useEffect(() => {
-    const update = () => setTravel(window.innerHeight);
-    update();
-    window.addEventListener("resize", update);
-    return () => window.removeEventListener("resize", update);
-  }, []);
-
-  // No image — text-only row still enters as a block, travelling in
-  // with the same duration/ease as the image sections so the rhythm
-  // feels consistent across the page.
-  if (!src) {
-    return (
-      <section ref={ref} className="bg-bg py-[60px] md:py-[100px]">
-        <motion.div
-          className="mx-auto grid max-w-frame grid-cols-12 gap-6 px-6 md:gap-8 md:px-12"
-          initial={{ y: travel }}
-          animate={inView ? { y: 0 } : { y: travel }}
-          transition={{ duration: SECTION_DURATION, ease: SECTION_EASE }}
-          style={{ willChange: "transform" }}
-        >
-          <div className="col-span-12 md:col-span-4 md:col-start-2">
-            <p className="text-[11px] uppercase tracking-[0.22em] text-ink/50">
-              ({String(index + 1).padStart(2, "0")})
-            </p>
-            <h2 className="mt-3 text-ink" style={headingStyle}>
-              {section.label}
-            </h2>
-          </div>
-          <p
-            className="col-span-12 mt-6 text-base text-ink/80 md:col-span-6 md:col-start-7 md:mt-0 md:text-lg"
-            style={{ lineHeight: 1.7 }}
-          >
-            {section.body}
-          </p>
-        </motion.div>
-      </section>
-    );
+/**
+ * Reverse-lookup which category a slug belongs to, using the same
+ * PROJECTS_BY_CATEGORY map that drives /work/[category]. Lets the
+ * case study show a proper "Work / Events" breadcrumb and link the
+ * back arrow to the right category page.
+ */
+function findCategoryKey(slug) {
+  for (const [key, list] of Object.entries(PROJECTS_BY_CATEGORY)) {
+    if (list.some((p) => p.slug === slug)) return key;
   }
+  return null;
+}
 
+/**
+ * A single content section (text + optional image) styled to match
+ * the rest of the case study and the WorkCategoryPage rhythm:
+ * compact spacing, single hairline divider above each block,
+ * alternating image column on desktop.
+ */
+function ProjectSection({ index, section, src, projectTitle }) {
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true, amount: 0.2, margin: "0px 0px -5% 0px" });
   const imageLeft = index % 2 === 1;
 
   return (
-    <section ref={ref} className="bg-bg py-[60px] md:py-[100px]">
-      <div
-        className={`mx-auto grid max-w-frame grid-cols-1 gap-12 px-6 md:items-start md:gap-20 md:px-12 ${
-          imageLeft ? "md:grid-cols-[1.5fr_1fr]" : "md:grid-cols-[1fr_1.5fr]"
+    <section
+      ref={ref}
+      className="mt-12 grid grid-cols-12 gap-6 border-t border-ink/10 pt-10 md:mt-16 md:gap-10 md:pt-12 lg:gap-14"
+    >
+      <motion.div
+        initial={{ opacity: 0, y: 32 }}
+        animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 32 }}
+        transition={{ duration: 0.9, ease: EASE }}
+        className={`col-span-12 flex flex-col justify-center md:col-span-6 ${
+          imageLeft ? "md:order-2" : "md:order-1"
         }`}
       >
-        <motion.div
-          className={`flex flex-col ${imageLeft ? "md:order-2" : ""}`}
-          initial={{ y: travel }}
-          animate={inView ? { y: 0 } : { y: travel }}
-          transition={{ duration: SECTION_DURATION, ease: SECTION_EASE }}
-          style={{ willChange: "transform" }}
+        <p
+          className="text-[10px] uppercase tracking-[0.24em] text-ink/45"
+          style={{ fontWeight: 500 }}
         >
-          <div>
-            <p className="text-[11px] uppercase tracking-[0.22em] text-ink/50">
-              ({String(index + 1).padStart(2, "0")})
-            </p>
-            <h2 className="mt-3 text-ink" style={headingStyle}>
-              {section.label}
-            </h2>
-          </div>
-          <p
-            className="mt-8 max-w-[42ch] text-base text-ink/80 md:text-lg"
-            style={{ lineHeight: 1.7 }}
-          >
-            {section.body}
-          </p>
-        </motion.div>
+          ({String(index + 1).padStart(2, "0")})
+        </p>
+        <h2
+          className="mt-3 text-ink"
+          style={{
+            fontFamily: "var(--font-sans)",
+            fontWeight: 500,
+            fontSize: "clamp(1.85rem, 4.5vw, 3.5rem)",
+            lineHeight: 1.05,
+            letterSpacing: "-0.025em",
+          }}
+        >
+          {section.label}
+        </h2>
+        <p
+          className="mt-5 max-w-[52ch] text-[15px] text-ink/75 md:mt-6 md:text-base"
+          style={{ lineHeight: 1.6 }}
+        >
+          {section.body}
+        </p>
+      </motion.div>
 
-        <ImageReveal
-          src={src}
-          alt={`${projectTitle} — ${section.label}`}
-          className={`aspect-[3/4] w-full ${imageLeft ? "md:order-1" : ""}`}
-          externalInView={inView}
-        />
-      </div>
+      {src && (
+        <motion.div
+          initial={{ opacity: 0, scale: 1.02 }}
+          animate={inView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 1.02 }}
+          transition={{ duration: 1.1, ease: EASE, delay: 0.1 }}
+          className={`col-span-12 md:col-span-6 ${
+            imageLeft ? "md:order-1" : "md:order-2"
+          }`}
+        >
+          <div className="relative aspect-[4/5] w-full overflow-hidden bg-ink/5">
+            <img
+              src={src}
+              alt={`${projectTitle} — ${section.label}`}
+              loading="lazy"
+              decoding="async"
+              draggable="false"
+              className="absolute inset-0 h-full w-full object-cover"
+            />
+          </div>
+        </motion.div>
+      )}
     </section>
   );
 }
@@ -109,33 +106,33 @@ function ProjectSection({ index, section, src, projectTitle, headingStyle }) {
 export default function CaseStudy({ slug }) {
   const { lang, t } = useLang();
   const rootRef = useRef(null);
-  const heroRef = useRef(null);
+  const headingRef = useRef(null);
+  const headingInView = useInView(headingRef, {
+    once: true,
+    amount: 0.2,
+    margin: "0px 0px -5% 0px",
+  });
 
   const project = projects[lang]?.[slug];
   const images = PROJECT_IMAGES[slug];
 
+  const categoryKey = findCategoryKey(slug);
+  const category = categoryKey ? t.workCategories[categoryKey] : null;
+  const backHref = categoryKey ? `/work/${categoryKey}` : "/";
+
   const currentIdx = PROJECT_ORDER.indexOf(slug);
   const nextSlug = PROJECT_ORDER[(currentIdx + 1) % PROJECT_ORDER.length];
   const nextProject = projects[lang]?.[nextSlug];
+  const nextCategoryKey = findCategoryKey(nextSlug);
+  const nextCategoryLabel = nextCategoryKey
+    ? t.workCategories[nextCategoryKey]?.title
+    : null;
 
   useEffect(() => {
     if (typeof window === "undefined") return;
     gsap.registerPlugin(ScrollTrigger);
     const ctx = gsap.context(() => {
       revealOnScroll(rootRef.current);
-
-      if (heroRef.current) {
-        gsap.to(heroRef.current, {
-          yPercent: 20,
-          ease: "none",
-          scrollTrigger: {
-            trigger: heroRef.current.parentElement,
-            start: "top top",
-            end: "bottom top",
-            scrub: true,
-          },
-        });
-      }
     }, rootRef);
     return () => ctx.revert();
   }, [slug]);
@@ -148,182 +145,278 @@ export default function CaseStudy({ slug }) {
     );
   }
 
-  const backLabel = lang === "es" ? "Volver" : "Back";
   const servicesLabel = lang === "es" ? "Servicios" : "Services";
+  const clientLabel = lang === "es" ? "Cliente" : "Client";
+  const locationLabel = lang === "es" ? "Ubicación" : "Location";
+  const yearLabel = lang === "es" ? "Año" : "Year";
   const nextLabel = lang === "es" ? "Siguiente proyecto" : "Next project";
+  const pressLabel = lang === "es" ? "Prensa" : "Press";
+  const featuredByLabel = lang === "es" ? "Publicado en" : "Featured by";
+  const backToStudioLabel = lang === "es" ? "← Volver al estudio" : "← Back to studio";
+  const backToCategoryLabel = category
+    ? lang === "es"
+      ? `← ${category.title}`
+      : `← ${category.title}`
+    : null;
+
+  const eyebrow = category
+    ? category.eyebrow
+    : lang === "es"
+    ? "Trabajo"
+    : "Work";
 
   return (
-    <div ref={rootRef} className="bg-bg text-ink">
-      {/* Hero */}
-      <section className="relative h-[70vh] w-full overflow-hidden bg-ink md:h-[85vh]">
-        {/* GSAP parallax owns transform on this wrapper; framer-motion owns
-            transform on the img inside. No single element is written by both. */}
-        <div ref={heroRef} className="absolute inset-0">
-          <motion.img
-            src={images?.hero}
-            alt={project.title}
-            className="absolute inset-0 h-full w-full object-cover opacity-80"
-            initial={{ opacity: 0, scale: 1.08 }}
-            animate={{ opacity: 0.8, scale: 1 }}
-            transition={{ duration: 1.4, ease: [0.22, 1, 0.36, 1] }}
-            style={{
-              objectPosition: "center 25%",
-              willChange: "transform, opacity",
-              backfaceVisibility: "hidden",
-            }}
-          />
+    <section
+      ref={rootRef}
+      className="relative w-full bg-bg pt-[120px] md:pt-[152px] lg:pt-[176px]"
+    >
+      <div className="mx-auto max-w-frame px-6 pb-[80px] md:px-10 md:pb-[112px] lg:px-12 lg:pb-[128px]">
+        {/* Eyebrow + back link — same pattern as WorkCategoryPage */}
+        <div className="flex items-baseline justify-between text-[11px] uppercase tracking-[0.22em] text-ink/60">
+          <span>{eyebrow}</span>
+          <TransitionLink href={backHref} className="link-underline text-ink">
+            {category ? backToCategoryLabel : "← Index"}
+          </TransitionLink>
         </div>
-        <motion.div
-          className="absolute inset-0"
-          style={{ background: "linear-gradient(180deg, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.15) 50%, rgba(0,0,0,0.6) 100%)" }}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1.0, ease: "easeOut", delay: 0.15 }}
-        />
-        <motion.div
-          className="relative mx-auto flex h-full max-w-frame flex-col justify-end px-6 pb-12 md:px-12 md:pb-16"
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1.3, ease: [0.22, 1, 0.36, 1], delay: 0.55 }}
+
+        {/* Project title */}
+        <motion.h1
+          ref={headingRef}
+          initial={{ opacity: 0, y: 56 }}
+          animate={headingInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 56 }}
+          transition={{ duration: 1.05, ease: EASE }}
+          className="mt-8 text-ink md:mt-10"
+          style={{
+            fontFamily: "var(--font-sans)",
+            fontWeight: 500,
+            fontSize: "clamp(3rem, 9vw, 7rem)",
+            lineHeight: 1.0,
+            letterSpacing: "-0.035em",
+            willChange: "transform, opacity",
+          }}
         >
-          <div className="text-[11px] uppercase tracking-[0.22em] text-bg/70">
-            {project.discipline}
-          </div>
-          <h1
-            className="mt-4 text-bg"
-            style={{
-              fontFamily: "var(--font-editorial)",
-              fontWeight: 200,
-              fontSize: "clamp(3.5rem, 10vw, 9rem)",
-              lineHeight: 0.95,
-              letterSpacing: "-0.03em",
-            }}
-          >
-            {project.title}
-          </h1>
+          {project.title}
+        </motion.h1>
+
+        {/* Subtitle + CTA row */}
+        <div className="mt-6 grid grid-cols-12 gap-6 md:mt-8 md:gap-8">
           <p
-            className="mt-4 font-editorial italic text-xl text-bg/80 md:text-2xl"
-            style={{ lineHeight: 1.2, letterSpacing: "-0.01em" }}
+            data-reveal
+            className="col-span-12 max-w-[58ch] text-base text-ink/75 md:col-span-7 md:text-[17px]"
+            style={{ lineHeight: 1.55 }}
           >
             {project.subtitle}
           </p>
-        </motion.div>
-      </section>
+          <div className="col-span-12 mt-4 flex md:col-span-5 md:mt-0 md:justify-end">
+            <a
+              href="/#contact"
+              data-cursor="cta"
+              data-magnetic="0.2"
+              className="link-underline text-[11px] uppercase tracking-[0.22em] text-ink"
+            >
+              {lang === "es" ? "Empezar un proyecto" : "Start a project"} ↗
+            </a>
+          </div>
+        </div>
 
-      {/* Meta bar */}
-      <section className="bg-bg py-10 md:py-14">
-        <div className="mx-auto grid max-w-frame grid-cols-12 gap-6 px-6 text-[12px] uppercase tracking-[0.22em] text-ink/60 md:gap-8 md:px-12">
+        {/* Hero image */}
+        <motion.div
+          data-reveal-media
+          initial={{ opacity: 0, scale: 1.02 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 1.2, ease: EASE, delay: 0.15 }}
+          className="relative mt-12 aspect-[16/9] w-full overflow-hidden bg-ink/5 md:mt-16"
+        >
+          <img
+            src={images?.hero}
+            alt={project.title}
+            className="absolute inset-0 h-full w-full object-cover"
+            draggable="false"
+          />
+        </motion.div>
+
+        {/* Meta strip — Client / Location / Year / Services */}
+        <div className="mt-12 grid grid-cols-12 gap-6 border-t border-ink/10 pt-8 text-[11px] uppercase tracking-[0.22em] text-ink/60 md:mt-16 md:gap-8 md:pt-10">
           <div data-reveal className="col-span-6 md:col-span-3">
-            <p className="text-ink/40">{lang === "es" ? "Cliente" : "Client"}</p>
-            <p className="mt-1 text-ink">{project.client}</p>
+            <p className="text-ink/40">{clientLabel}</p>
+            <p className="mt-2 text-ink normal-case tracking-normal">
+              {project.client}
+            </p>
           </div>
           <div data-reveal className="col-span-6 md:col-span-3">
-            <p className="text-ink/40">{lang === "es" ? "Ubicación" : "Location"}</p>
-            <p className="mt-1 text-ink">{project.location}</p>
+            <p className="text-ink/40">{locationLabel}</p>
+            <p className="mt-2 text-ink normal-case tracking-normal">
+              {project.location}
+            </p>
           </div>
           <div data-reveal className="col-span-6 md:col-span-3">
-            <p className="text-ink/40">{lang === "es" ? "Año" : "Year"}</p>
-            <p className="mt-1 text-ink">{project.year}</p>
+            <p className="text-ink/40">{yearLabel}</p>
+            <p className="mt-2 text-ink normal-case tracking-normal">
+              {project.year}
+            </p>
           </div>
           <div data-reveal className="col-span-6 md:col-span-3">
             <p className="text-ink/40">{servicesLabel}</p>
-            <p className="mt-1 text-ink">{project.services.slice(0, 3).join(", ")}</p>
+            <p className="mt-2 text-ink normal-case tracking-normal">
+              {project.services.slice(0, 3).join(", ")}
+            </p>
           </div>
         </div>
-      </section>
 
-      {/* Intro */}
-      <section className="bg-bg py-[60px] md:py-[100px]">
-        <div className="mx-auto grid max-w-frame grid-cols-12 gap-6 px-6 md:gap-8 md:px-12">
+        {/* Intro */}
+        <div className="mt-12 grid grid-cols-12 gap-6 md:mt-16 md:gap-8">
           <p
             data-reveal
-            className="col-span-12 text-xl text-ink/85 md:col-span-8 md:col-start-3 md:text-2xl"
-            style={{ lineHeight: 1.55, fontFamily: "var(--font-neue)" }}
+            className="col-span-12 text-lg text-ink md:col-span-9 md:text-xl"
+            style={{ fontWeight: 500, lineHeight: 1.4 }}
           >
             {project.intro}
           </p>
         </div>
-      </section>
 
-      {/* Content sections + gallery */}
-      {project.sections.map((section, i) => {
-        const src = images?.gallery[i];
-        const headingStyle = {
-          fontFamily: "var(--font-editorial)",
-          fontWeight: 300,
-          fontSize: "clamp(2rem, 3.5vw, 3rem)",
-          lineHeight: 1.1,
-          letterSpacing: "-0.02em",
-        };
+        {/* Content sections with images */}
+        {project.sections.map((section, i) => {
+          const src = images?.gallery?.[i];
+          return (
+            <ProjectSection
+              key={i}
+              index={i}
+              section={section}
+              src={src}
+              projectTitle={project.title}
+            />
+          );
+        })}
 
-        return (
-          <ProjectSection
-            key={i}
-            index={i}
-            section={section}
-            src={src}
-            projectTitle={project.title}
-            headingStyle={headingStyle}
-          />
-        );
-      })}
-
-      {/* Services list */}
-      <section className="bg-bg py-[60px] md:py-[80px]">
-        <div className="mx-auto grid max-w-frame grid-cols-12 gap-6 border-t border-ink/10 px-6 pt-10 md:gap-8 md:px-12">
-          <div data-reveal className="col-span-12 md:col-span-3 md:col-start-2">
-            <p className="text-[11px] uppercase tracking-[0.22em] text-ink/50">{servicesLabel}</p>
+        {/* Extra editorial gallery — only rendered when the project
+            defines additional images beyond the section ones. Each
+            item declares its own col-span and aspect, so projects like
+            Backyard dello Specchio can breathe with asymmetric pairs
+            and full-bleed landscape frames. */}
+        {images?.extraGallery?.length > 0 && (
+          <div className="mt-12 grid grid-cols-12 gap-5 md:mt-16 md:gap-6 lg:gap-8">
+            {images.extraGallery.map((item, i) => (
+              <div
+                key={item.src}
+                data-reveal-media
+                className={item.span || "col-span-12"}
+              >
+                <div
+                  className={`relative w-full overflow-hidden bg-ink/5 ${
+                    item.aspect || "aspect-[3/2]"
+                  }`}
+                >
+                  <img
+                    src={item.src}
+                    alt={item.alt || `${project.title} — ${i + 1}`}
+                    loading="lazy"
+                    decoding="async"
+                    draggable="false"
+                    className="absolute inset-0 h-full w-full object-cover"
+                  />
+                </div>
+              </div>
+            ))}
           </div>
-          <ul data-reveal className="col-span-12 flex flex-wrap gap-x-8 gap-y-2 text-[13px] text-ink/70 md:col-span-7 md:col-start-6">
+        )}
+
+        {/* Full services list */}
+        <div
+          data-reveal
+          className="mt-12 grid grid-cols-12 gap-6 border-t border-ink/10 pt-8 md:mt-16 md:gap-8 md:pt-10"
+        >
+          <p className="col-span-12 text-[10px] uppercase tracking-[0.24em] text-ink/45 md:col-span-3" style={{ fontWeight: 500 }}>
+            {servicesLabel}
+          </p>
+          <ul className="col-span-12 grid grid-cols-1 gap-y-2 text-[14px] text-ink/80 sm:grid-cols-2 md:col-span-9">
             {project.services.map((s) => (
-              <li key={s}>{s}</li>
+              <li key={s} className="flex items-baseline gap-2.5">
+                <span className="h-px w-3 flex-shrink-0 translate-y-[-3px] bg-ink/40" />
+                <span>{s}</span>
+              </li>
             ))}
           </ul>
         </div>
-      </section>
 
-      {/* Next project */}
-      {nextProject && (
-        <section className="bg-ink py-[80px] text-bg md:py-[120px]">
-          <div className="mx-auto max-w-frame px-6 md:px-12">
-            <p className="text-[11px] uppercase tracking-[0.22em] text-bg/60">{nextLabel}</p>
+        {/* Press credit — optional, only if the project was picked up
+            by an external publication. Quiet editorial line, no logo,
+            no marketing language. */}
+        {project.press?.url && (
+          <div
+            data-reveal
+            className="mt-8 flex flex-col gap-2 text-[11px] uppercase tracking-[0.22em] text-ink/55 md:flex-row md:items-baseline md:gap-4"
+          >
+            <span className="text-ink/40">{pressLabel}</span>
+            <span className="text-ink/55 normal-case tracking-normal md:tracking-normal">
+              {featuredByLabel}{" "}
+              <a
+                href={project.press.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="link-underline text-ink"
+              >
+                {project.press.label}
+              </a>{" "}
+              ↗
+            </span>
+          </div>
+        )}
+
+        {/* Next project — compact, light, matches the rest */}
+        {nextProject && (
+          <div className="mt-16 border-t border-ink/10 pt-10 md:mt-24 md:pt-12">
+            <div className="flex items-baseline justify-between gap-6">
+              <p
+                className="text-[10px] uppercase tracking-[0.24em] text-ink/45"
+                style={{ fontWeight: 500 }}
+              >
+                {nextLabel}
+              </p>
+              {nextCategoryLabel && (
+                <p className="text-[11px] uppercase tracking-[0.22em] text-ink/55">
+                  {nextCategoryLabel}
+                </p>
+              )}
+            </div>
             <TransitionLink
               href={`/work/${nextSlug}`}
-              className="group mt-6 block"
+              className="group mt-6 grid grid-cols-12 items-center gap-6 md:mt-8"
               data-cursor="cta"
               data-magnetic="0.2"
             >
               <h3
-                className="text-bg transition-opacity duration-500 group-hover:opacity-80"
+                className="col-span-12 text-ink transition-opacity duration-500 group-hover:opacity-80 md:col-span-10"
                 style={{
-                  fontFamily: "var(--font-editorial)",
-                  fontWeight: 200,
-                  fontSize: "clamp(3rem, 9vw, 8rem)",
-                  lineHeight: 0.95,
-                  letterSpacing: "-0.03em",
+                  fontFamily: "var(--font-sans)",
+                  fontWeight: 500,
+                  fontSize: "clamp(2.25rem, 6vw, 5rem)",
+                  lineHeight: 1.0,
+                  letterSpacing: "-0.035em",
                 }}
               >
                 {nextProject.title}
               </h3>
-              <p className="mt-3 text-[12px] uppercase tracking-[0.22em] text-bg/60">
-                {nextProject.discipline} — {nextProject.year}
-              </p>
+              <span
+                aria-hidden="true"
+                className="col-span-12 text-sm leading-none text-ink/70 transition-transform duration-500 group-hover:translate-x-1.5 md:col-span-2 md:justify-self-end md:text-base"
+              >
+                →
+              </span>
             </TransitionLink>
+            <p className="mt-3 text-[11px] uppercase tracking-[0.22em] text-ink/55">
+              {nextProject.discipline} — {nextProject.year}
+            </p>
           </div>
-        </section>
-      )}
+        )}
 
-      {/* Back link */}
-      <section className="bg-bg py-10 md:py-14">
-        <div className="mx-auto max-w-frame px-6 md:px-12">
-          <TransitionLink
-            href="/#work"
-            className="link-underline text-[12px] uppercase tracking-[0.22em] text-ink/60"
-          >
-            ← {backLabel}
+        {/* Footer row */}
+        <div className="mt-16 flex items-center justify-between border-t border-ink/10 pt-6 text-[11px] uppercase tracking-[0.22em] text-ink/60 md:mt-24 md:pt-7">
+          <TransitionLink href="/" className="link-underline text-ink">
+            {backToStudioLabel}
           </TransitionLink>
+          <span>{t.work.sectionIndex}</span>
         </div>
-      </section>
-    </div>
+      </div>
+    </section>
   );
 }
