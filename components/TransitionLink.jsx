@@ -25,10 +25,29 @@ const TransitionLink = forwardRef(function TransitionLink(
     if (href.startsWith("http://") || href.startsWith("https://")) return;
     if (href.startsWith("mailto:") || href.startsWith("tel:")) return;
 
-    // Same-route hash navigation: skip curtain, let browser scroll.
     try {
       const url = new URL(href, window.location.origin);
-      if (url.pathname === window.location.pathname && url.hash) return;
+      if (url.pathname === window.location.pathname) {
+        // Same-route hash anchor — let the SmoothScroll click handler
+        // catch it and animate to the section.
+        if (url.hash) return;
+        // Same route + no hash (e.g. logo click while already on /).
+        // Next.js's router.push would be a no-op so the user would
+        // stay scrolled where they were. Force a smooth scroll back
+        // to the top of the page instead.
+        e.preventDefault();
+        const lenis = window.__lenis;
+        if (lenis && typeof lenis.stop === "function") lenis.stop();
+        window.scrollTo(0, 0);
+        if (lenis) {
+          if (typeof lenis.scrollTo === "function") {
+            lenis.scrollTo(0, { immediate: true });
+          }
+          if (typeof lenis.start === "function") lenis.start();
+        }
+        history.replaceState(null, "", url.pathname);
+        return;
+      }
     } catch {}
 
     e.preventDefault();

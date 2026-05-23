@@ -63,16 +63,12 @@
   --color-ink: #111111;
   --color-secondary: #bfb8af;
   --color-accent: #e6dfd7;
-  /* Sticky-header offset for hash links. Lenis + native scroll both
-     respect scroll-padding-top, so a click on a #section lands with
-     the header clear of its title. Mobile uses a tighter offset. */
-  scroll-padding-top: 88px;
-}
-
-@media (max-width: 768px) {
-  :root {
-    scroll-padding-top: 72px;
-  }
+  /* Sticky-header offset for hash links — matches NAV_OFFSET in
+     SmoothScroll.jsx so when the JS path bails (e.g. external page
+     load, no-JS) the native scroll-to-hash still lands in the same
+     place. NO scroll-margin-top is set on sections; those used to
+     stack on top of this and push the target 96px too low. */
+  scroll-padding-top: 56px;
 }
 
 * {

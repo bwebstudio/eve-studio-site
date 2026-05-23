@@ -1,118 +1,57 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import {
-  cubicBezier,
-  motion,
-  useInView,
-  useScroll,
-  useTransform,
-} from "framer-motion";
+import { useEffect, useRef } from "react";
 import TransitionLink from "./TransitionLink";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { revealOnScroll } from "@/lib/animations";
 import useLang from "@/lib/useLang";
-import useResponsiveScale from "@/lib/useResponsiveScale";
 import { PROJECT_IMAGES } from "@/lib/projects";
 
-const EASE = [0.22, 1, 0.36, 1];
-// Shared with Studio / ImageReveal — same travel ease so every card
-// across the site enters with the identical editorial curve.
-const CELL_EASE = [0.33, 1, 0.68, 1];
-const CELL_DURATION = 1.8;
-// Ease-out for the scroll-linked zoom so the scale lands on 1
-// gradually instead of hitting the clamp with a hard corner.
-const ZOOM_EASE = cubicBezier(0.22, 1, 0.36, 1);
-
+/**
+ * Project card — simplified. The previous version translated each
+ * card up from `window.innerHeight` below its layout position and
+ * applied a scroll-linked image scale. Both effects could overlap
+ * visually when the user scrolled back up past a card (especially
+ * with browser back-forward cache), so we replaced them with a
+ * single opacity+small-y reveal via [data-reveal] — no scroll-linked
+ * transforms, no per-card scroll listeners.
+ */
 function ProjectCard({ p, layout }) {
   const images = PROJECT_IMAGES[p.slug];
   const heroImg = images?.hero;
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true, amount: 0.2 });
-
-  // Cell travels from a full viewport height below into its final
-  // position — same mechanic the Studio / case-study gallery use.
-  const [travel, setTravel] = useState(900);
-  useEffect(() => {
-    const update = () => setTravel(window.innerHeight);
-    update();
-    window.addEventListener("resize", update);
-    return () => window.removeEventListener("resize", update);
-  }, []);
-
-  // Scroll-linked zoom-out on the image: starts zoomed in and settles
-  // to scale 1 around the midpoint so the frame sits at its natural
-  // crop for most of its time on screen.
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start end", "end start"],
-  });
-  const scaleStart = useResponsiveScale();
-  const imageScale = useTransform(
-    scrollYProgress,
-    [0.15, 0.85],
-    [scaleStart, 1],
-    { clamp: true, ease: ZOOM_EASE }
-  );
 
   return (
     <article
       data-cursor="media"
       data-cursor-label="View"
+      data-reveal
       className={`group ${layout.span}`}
     >
       <TransitionLink href={`/work/${p.slug}`} className="block">
-        {/* Tracker — drives both the inView entry and the scroll
-            progress for the zoom-out. */}
-        <div ref={ref}>
-          {/* Cell translate — frame + labels move together as one. */}
-          <motion.div
-            initial={{ y: travel }}
-            animate={inView ? { y: 0 } : { y: travel }}
-            transition={{ duration: CELL_DURATION, ease: CELL_EASE }}
-            style={{
-              willChange: "transform",
-              backfaceVisibility: "hidden",
-              WebkitBackfaceVisibility: "hidden",
-            }}
-          >
-            <div className={`relative w-full overflow-hidden ${layout.aspect}`}>
-              {/* Hover wrapper — CSS scale on group-hover, layered
-                  separately from the scroll-linked scale so they
-                  compose without fighting. */}
-              <div className="absolute inset-0 transition-transform duration-[1100ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.04]">
-                <motion.img
-                  src={heroImg}
-                  alt={p.title}
-                  loading="eager"
-                  decoding="async"
-                  draggable="false"
-                  className="media-grayscale absolute inset-0 h-full w-full object-cover"
-                  style={{
-                    scale: imageScale,
-                    willChange: "transform, filter",
-                    backfaceVisibility: "hidden",
-                    WebkitBackfaceVisibility: "hidden",
-                  }}
-                />
-              </div>
-              <div
-                aria-hidden="true"
-                className="pointer-events-none absolute inset-0 bg-ink opacity-0 transition-opacity duration-500 ease-out group-hover:opacity-[0.12]"
-              />
+        <div className={`relative w-full overflow-hidden ${layout.aspect}`}>
+          <img
+            src={heroImg}
+            alt={p.title}
+            loading="lazy"
+            decoding="async"
+            draggable="false"
+            className="media-grayscale absolute inset-0 h-full w-full object-cover transition-transform duration-[1100ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.04]"
+          />
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 bg-ink opacity-0 transition-opacity duration-500 ease-out group-hover:opacity-[0.12]"
+          />
+        </div>
+        <div className="mt-5 flex items-start justify-between gap-6">
+          <div className="flex items-start gap-6">
+            <span className="text-[11px] uppercase tracking-[0.22em] text-ink/50">({p.index})</span>
+            <div>
+              <h3 className="text-2xl text-ink md:text-3xl">{p.title}</h3>
+              <p className="mt-1 text-[12px] uppercase tracking-[0.18em] text-ink/60">{p.discipline}</p>
             </div>
-            <div className="mt-5 flex items-start justify-between gap-6">
-              <div className="flex items-start gap-6">
-                <span className="text-[11px] uppercase tracking-[0.22em] text-ink/50">({p.index})</span>
-                <div>
-                  <h3 className="text-2xl text-ink md:text-3xl">{p.title}</h3>
-                  <p className="mt-1 text-[12px] uppercase tracking-[0.18em] text-ink/60">{p.discipline}</p>
-                </div>
-              </div>
-              <span className="text-[11px] uppercase tracking-[0.22em] text-ink/50">{p.year}</span>
-            </div>
-          </motion.div>
+          </div>
+          <span className="text-[11px] uppercase tracking-[0.22em] text-ink/50">{p.year}</span>
         </div>
       </TransitionLink>
     </article>
@@ -132,12 +71,6 @@ const GRID = [
 export default function SelectedWork({ onOpenOverlay }) {
   const { t } = useLang();
   const rootRef = useRef(null);
-  const headingRef = useRef(null);
-  const headingInView = useInView(headingRef, {
-    once: true,
-    amount: 0.25,
-    margin: "0px 0px -5% 0px",
-  });
   useEffect(() => {
     if (typeof window === "undefined") return;
     gsap.registerPlugin(ScrollTrigger);
@@ -154,7 +87,7 @@ export default function SelectedWork({ onOpenOverlay }) {
     <section
       ref={rootRef}
       id="work"
-      className="relative w-full scroll-mt-24 overflow-hidden border-t border-ink/10 bg-bg pt-12 pb-14 md:pt-16 md:pb-20 lg:pt-20 lg:pb-24"
+      className="relative w-full overflow-hidden border-t border-ink/10 bg-bg pt-12 pb-14 md:pt-16 md:pb-20 lg:pt-20 lg:pb-24"
     >
       <div className="mx-auto max-w-frame px-6 md:px-10 lg:px-12">
         {/* Header row — Kaiora pattern: eyebrow left + CTA right */}

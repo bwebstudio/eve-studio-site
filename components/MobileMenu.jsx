@@ -18,6 +18,13 @@ export default function MobileMenu({ isOpen, onClose, onOpenWorkOverlay }) {
   const scrollLockYRef = useRef(0);
   const wasOpenRef = useRef(false);
   const pendingHashRef = useRef(null);
+  // When the menu link triggers a cross-route navigation (e.g. About
+  // clicked from /blog → router.push("/#about")), the close-animation
+  // onComplete fires AFTER Next.js has already navigated. We must not
+  // restore the old page's scroll Y onto the new page — that's what
+  // was producing the "briefly scrolls to the section then jumps to
+  // home" bug. Setting this flag tells onComplete to skip the restore.
+  const skipScrollRestoreRef = useRef(false);
 
   const [portalTarget, setPortalTarget] = useState(null);
   useEffect(() => { setPortalTarget(document.body); }, []);
@@ -56,37 +63,71 @@ export default function MobileMenu({ isOpen, onClose, onOpenWorkOverlay }) {
       const tl = gsap.timeline({
         onComplete: () => {
           gsap.set(overlay, { display: "none", pointerEvents: "none" });
+
+          // Release body scroll lock. The scroll-restore is gated by
+          // skipScrollRestoreRef so that cross-route navigations
+          // (which already left this page) don't have the old page's
+          // scrollY re-applied on top of the new page.
           document.body.style.position = "";
           document.body.style.top = "";
           document.body.style.left = "";
           document.body.style.right = "";
-          const hash = pendingHashRef.current;
-          if (hash) {
-            pendingHashRef.current = null;
-            const target = document.getElementById(hash);
-            if (target) {
-              // Restore scroll position first so Lenis starts from a
-              // sensible origin, then let Lenis interpolate to the
-              // target with the header offset applied.
-              window.scrollTo(0, scrollLockYRef.current || 0);
-              const lenis = window.__lenis;
-              const offset = window.matchMedia("(max-width: 768px)").matches
-                ? -72
-                : -88;
-              if (lenis) {
-                requestAnimationFrame(() => {
-                  lenis.scrollTo(target, { offset, duration: 0.9 });
-                });
-              } else {
-                target.scrollIntoView({ behavior: "smooth", block: "start" });
-              }
-            } else {
-              window.scrollTo(0, scrollLockYRef.current || 0);
-            }
-          } else {
+
+          const skipRestore = skipScrollRestoreRef.current;
+          skipScrollRestoreRef.current = false;
+          if (!skipRestore) {
             window.scrollTo(0, scrollLockYRef.current || 0);
-            previousFocusRef.current?.focus?.();
           }
+
+          const hash = pendingHashRef.current;
+          pendingHashRef.current = null;
+          const target = hash ? document.getElementById(hash) : null;
+
+          if (!target) {
+            if (!skipRestore) previousFocusRef.current?.focus?.();
+            return;
+          }
+
+          // Two requestAnimationFrames:
+          //   1st — let the browser apply our scrollTo restore so the
+          //         layout sees the restored scroll position
+          //   2nd — measure target with that scroll, then perform the
+          //         jump. Without the second RAF, measurement can run
+          //         before Lenis's scroll-listener has synced its
+          //         internal state, and the jump lands at the wrong Y.
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              const NAV_OFFSET = 56;
+              const rect = target.getBoundingClientRect();
+              const scrollY = Math.max(
+                0,
+                rect.top + window.scrollY - NAV_OFFSET
+              );
+
+              // Lenis's RAF writes its internal `animatedScroll` to the
+              // document on every frame. If we just call window.scrollTo,
+              // Lenis's next tick can overwrite it with a stale value —
+              // that's how navigation was silently snapping the user
+              // back to the top. To prevent the race:
+              //   1. stop Lenis (pauses its RAF)
+              //   2. native scrollTo to the target
+              //   3. tell Lenis the new scroll is the new resting point
+              //   4. restart Lenis so the user can scroll normally
+              const lenis = window.__lenis;
+              if (lenis && typeof lenis.stop === "function") {
+                lenis.stop();
+              }
+              window.scrollTo(0, scrollY);
+              if (lenis) {
+                if (typeof lenis.scrollTo === "function") {
+                  lenis.scrollTo(scrollY, { immediate: true });
+                }
+                if (typeof lenis.start === "function") {
+                  lenis.start();
+                }
+              }
+            });
+          });
         },
       });
       tl.to([...navChildren, ...footerChildren], { opacity: 0, y: -8, filter: "blur(4px)", duration: 0.22, ease: "power3.in", stagger: 0.02 });
@@ -129,17 +170,42 @@ export default function MobileMenu({ isOpen, onClose, onOpenWorkOverlay }) {
     }
 
     const href = e.currentTarget.getAttribute("href") || "";
-    if (href.startsWith("/#") || href.startsWith("#")) {
-      // Same-page hash: close the menu and let the post-close handler
-      // run the scrollIntoView so the section lands under the header.
-      const hash = href.startsWith("/#") ? href.slice(2) : href.slice(1);
-      // Only intercept on the home; cross-page hash links should
-      // navigate normally (TransitionLink would handle that anyway).
-      if (typeof window !== "undefined" && window.location.pathname === "/") {
+    const onHome =
+      typeof window !== "undefined" && window.location.pathname === "/";
+
+    // Same-page anchor flow: covers both #hash links AND clicking
+    // "Home" while already on home (Next.js's router.push("/")
+    // becomes a no-op on the same URL — without this branch the user
+    // would close the menu and stay scrolled at the previous section).
+    if (onHome) {
+      let hash = null;
+      if (href === "/" || href === "") {
+        // Home → scroll back to the hero (which has id="top").
+        hash = "top";
+      } else if (href.startsWith("/#")) {
+        hash = href.slice(2);
+      } else if (href.startsWith("#")) {
+        hash = href.slice(1);
+      }
+      if (hash !== null) {
         e.preventDefault();
         pendingHashRef.current = hash;
+        // Don't release body lock here — keep the page visually
+        // anchored while the menu fades out. The onComplete handler
+        // releases the lock, restores the scroll, and hands off to
+        // Lenis in a single tick to avoid the "page jumps to top"
+        // flash that used to happen between unlock and scroll-restore.
+        onClose();
+        return;
       }
     }
+
+    // Cross-route link: let Next.js's Link navigate. Release the body
+    // lock immediately AND mark the next onComplete to skip the
+    // scroll-restore — otherwise the old page's scrollY would be
+    // applied to the new page 300ms later, snapping the user away
+    // from wherever Next.js had already scrolled.
+    skipScrollRestoreRef.current = true;
     resetBodyScrollLock();
     onClose();
   };
@@ -180,18 +246,23 @@ export default function MobileMenu({ isOpen, onClose, onOpenWorkOverlay }) {
         </button>
       </div>
 
-      <nav ref={navRef} aria-label="Primary" className="relative z-10 flex flex-1 flex-col justify-center gap-1 px-6">
+      {/* Larger tap targets + vertical breathing room — the previous
+          gap-1 + line-height:1 made adjacent items (Services / Work /
+          Contact) bleed into each other on touch, so accidental taps
+          opened the wrong route or the Work overlay. py-3 +
+          min-h-[56px] guarantees a comfortable 56px target per row. */}
+      <nav ref={navRef} aria-label="Primary" className="relative z-10 flex flex-1 flex-col justify-center gap-2 px-6">
         {t.mobileMenu.links.map((item, i) => (
           <Link
             key={item.href + item.label}
             href={item.href}
             onClick={handleLinkClick(item)}
-            className="group flex items-baseline gap-4"
+            className="group flex min-h-[56px] items-baseline gap-4 py-3"
             style={{
               fontFamily: "var(--font-sans)",
               fontWeight: 500,
-              fontSize: "clamp(2.75rem, 9.5vw, 5.5rem)",
-              lineHeight: 1,
+              fontSize: "clamp(2.25rem, 8vw, 4.75rem)",
+              lineHeight: 1.05,
               letterSpacing: "-0.035em",
               whiteSpace: "nowrap",
             }}

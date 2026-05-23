@@ -43,7 +43,7 @@ export default function Blog({ limit, asSection = false }) {
     ? {
         id: "blog",
         className:
-          "relative w-full scroll-mt-24 border-t border-ink/10 bg-bg pt-12 pb-14 md:pt-16 md:pb-20 lg:pt-20 lg:pb-24",
+          "relative w-full border-t border-ink/10 bg-bg pt-12 pb-14 md:pt-16 md:pb-20 lg:pt-20 lg:pb-24",
       }
     : { className: "relative w-full bg-bg pt-[120px] pb-[80px] md:pt-[152px] md:pb-[112px] lg:pt-[176px] lg:pb-[128px]" };
 

@@ -5,16 +5,25 @@ import Lenis from "lenis";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
-// Header height in px used to compute scroll offset for hash anchors.
-// Matches scroll-padding-top in globals.css.
-const HEADER_OFFSET_DESKTOP = 88;
-const HEADER_OFFSET_MOBILE = 72;
+// Pixel offset of the section's top from the viewport top after a
+// hash-link scroll. Sized so the section's border-t sits flush under
+// the fixed nav (no slice of the previous section visible). Slightly
+// smaller than the nav's actual ~62px so the section's first padding
+// pixels tuck behind the nav rather than the previous section.
+const NAV_OFFSET = 56;
 
-function headerOffset() {
-  if (typeof window === "undefined") return HEADER_OFFSET_DESKTOP;
-  return window.matchMedia("(max-width: 768px)").matches
-    ? HEADER_OFFSET_MOBILE
-    : HEADER_OFFSET_DESKTOP;
+/**
+ * Compute the exact document Y to scroll to for a given element so
+ * that its top lands NAV_OFFSET px from the viewport top. Doing the
+ * math here (instead of relying on Lenis's `offset` parameter or the
+ * browser's scroll-padding/scroll-margin) means every hash-link
+ * navigation — desktop, mobile menu, mobile fallback — lands in the
+ * exact same place.
+ */
+export function computeAnchorScrollY(el) {
+  if (!el || typeof window === "undefined") return 0;
+  const targetTop = el.getBoundingClientRect().top + window.scrollY;
+  return Math.max(0, targetTop - NAV_OFFSET);
 }
 
 export default function SmoothScroll() {
@@ -31,9 +40,9 @@ export default function SmoothScroll() {
       touchMultiplier: 1.5,
     });
 
-    // Expose so other components (mobile menu, nav anchors) can drive
-    // programmatic scroll with the right header offset, instead of
-    // letting native scrollIntoView fight with Lenis's RAF loop.
+    // Exposed so components that aren't allowed to import this file
+    // directly (mobile menu post-close handler) can still drive
+    // programmatic scroll with the same engine + offset.
     window.__lenis = lenis;
 
     lenis.on("scroll", ScrollTrigger.update);
@@ -45,35 +54,33 @@ export default function SmoothScroll() {
     gsap.ticker.add(raf);
     gsap.ticker.lagSmoothing(0);
 
-    // Intercept anchor clicks across the document so every same-page
-    // hash link routes through Lenis with the negative header offset.
-    // Cross-page links (different pathname) are left alone — they hand
-    // off to Next.js's router.
+    // Intercept same-page hash clicks so they route through Lenis with
+    // a manually-computed target Y. Cross-page links pass through to
+    // Next.js's router.
     const onAnchorClick = (e) => {
-      // Only plain left-clicks without modifiers.
       if (e.defaultPrevented) return;
       if (e.metaKey || e.ctrlKey || e.shiftKey || e.button === 1) return;
       const anchor = e.target.closest?.("a[href]");
       if (!anchor) return;
       const href = anchor.getAttribute("href") || "";
-      let target = null;
+      let targetId = null;
 
       if (href.startsWith("#")) {
-        target = href.slice(1);
+        targetId = href.slice(1);
       } else if (href.startsWith("/#") && window.location.pathname === "/") {
-        target = href.slice(2);
+        targetId = href.slice(2);
       } else {
         return;
       }
 
-      const el = target ? document.getElementById(target) : null;
+      const el = targetId ? document.getElementById(targetId) : null;
       if (!el) return;
 
       e.preventDefault();
-      lenis.scrollTo(el, { offset: -headerOffset(), duration: 1.0 });
-      // Update URL hash without triggering scroll.
-      if (target) {
-        history.replaceState(null, "", `#${target}`);
+      const scrollY = computeAnchorScrollY(el);
+      lenis.scrollTo(scrollY, { duration: 1.0 });
+      if (targetId) {
+        history.replaceState(null, "", `#${targetId}`);
       }
     };
 

@@ -122,7 +122,7 @@ export default function Contact() {
     <section
       ref={rootRef}
       id="contact"
-      className="relative w-full scroll-mt-24 border-t border-ink/10 bg-bg pb-14 pt-12 md:pb-16 md:pt-16 lg:pt-20"
+      className="relative w-full border-t border-ink/10 bg-bg pb-14 pt-12 md:pb-16 md:pt-16 lg:pt-20"
     >
       <div className="mx-auto max-w-frame px-6 md:px-10 lg:px-12">
         {/* Header row — Kaiora compact pattern */}

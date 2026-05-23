@@ -38,7 +38,7 @@ export default function Services() {
     <section
       ref={rootRef}
       id="services"
-      className="relative w-full scroll-mt-24 border-t border-ink/10 bg-bg pt-12 pb-14 md:pt-16 md:pb-20 lg:pt-20 lg:pb-24"
+      className="relative w-full border-t border-ink/10 bg-bg pt-12 pb-14 md:pt-16 md:pb-20 lg:pt-20 lg:pb-24"
     >
       <div className="mx-auto max-w-frame px-6 md:px-10 lg:px-12">
         {/* Header row — Kaiora compact pattern: eyebrow left + CTA right
@@ -54,7 +54,7 @@ export default function Services() {
             {t.services.eyebrow}
           </p>
           <TransitionLink
-            href="/#contact"
+            href="/services"
             data-cursor="cta"
             className="group inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.22em] text-ink"
           >

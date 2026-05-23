@@ -34,7 +34,7 @@ export default function About() {
     <section
       ref={rootRef}
       id="about"
-      className="relative w-full scroll-mt-24 border-t border-ink/10 bg-bg pt-12 pb-14 md:pt-16 md:pb-20 lg:pt-20 lg:pb-24"
+      className="relative w-full border-t border-ink/10 bg-bg pt-12 pb-14 md:pt-16 md:pb-20 lg:pt-20 lg:pb-24"
     >
       <div className="mx-auto max-w-frame px-6 md:px-10 lg:px-12">
         {/* 2-column main block — image left, text right (Kaiora order) */}
