@@ -3,3 +3,9 @@ node_modules
 out
 .DS_Store
 .env*.local
+
+# Master video sources — keep large MOV/raw masters out of the repo.
+# Only the web-optimised .mp4 derivatives (e.g. *-loop.mp4) are shipped.
+*.MOV
+*.mov
+public/images/work/xeri-gin-focaccia-beat/barman-xeri.mp4
