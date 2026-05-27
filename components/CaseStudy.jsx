@@ -12,6 +12,7 @@ import projects, {
   PROJECTS_BY_CATEGORY,
 } from "@/lib/projects";
 import TransitionLink from "./TransitionLink";
+import ProjectGallerySlider from "./ProjectGallerySlider";
 
 const EASE = [0.22, 1, 0.36, 1];
 
@@ -29,15 +30,32 @@ function findCategoryKey(slug) {
 }
 
 /**
- * A single content section (text + optional image) styled to match
- * the rest of the case study and the WorkCategoryPage rhythm:
- * compact spacing, single hairline divider above each block,
- * alternating image column on desktop.
+ * A single content section (text + optional image OR video) styled to
+ * match the rest of the case study. Each section gallery item can be
+ * either a plain string (image URL) or an object describing a richer
+ * media — currently { type: "video", src, poster, alt, aspect, grade }.
+ * The grade prop maps to a CSS class ("warm-duotone") so individual
+ * media can carry the project's chromatic signature without bleeding
+ * the treatment into every other case study.
  */
-function ProjectSection({ index, section, src, projectTitle }) {
+function ProjectSection({ index, section, media, projectTitle }) {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, amount: 0.2, margin: "0px 0px -5% 0px" });
   const imageLeft = index % 2 === 1;
+
+  const mediaItem = typeof media === "string" || !media ? { src: media } : media;
+  const isVideo = mediaItem.type === "video";
+  const aspectClass = mediaItem.aspect || "aspect-[4/5]";
+  // Grade-driven chromatic treatment. Each value (e.g. "warm-duotone",
+  // "red-duotone") maps to a trio of CSS classes defined in globals.css:
+  //   .media-<grade>-wrap  → hover anchor on the container
+  //   .media-<grade>       → CSS filter on the image/video element
+  //   .media-<grade>__tint → mix-blend gradient overlay
+  // Adding a new grade is a CSS-only change.
+  const grade = mediaItem.grade;
+  const gradeWrapClass = grade ? `media-${grade}-wrap` : "";
+  const gradeMediaClass = grade ? `media-${grade}` : "";
+  const gradeTintClass = grade ? `media-${grade}__tint` : "";
 
   return (
     <section
@@ -78,7 +96,7 @@ function ProjectSection({ index, section, src, projectTitle }) {
         </p>
       </motion.div>
 
-      {src && (
+      {mediaItem.src && (
         <motion.div
           initial={{ opacity: 0, scale: 1.02 }}
           animate={inView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 1.02 }}
@@ -87,15 +105,32 @@ function ProjectSection({ index, section, src, projectTitle }) {
             imageLeft ? "md:order-1" : "md:order-2"
           }`}
         >
-          <div className="relative aspect-[4/5] w-full overflow-hidden bg-ink/5">
-            <img
-              src={src}
-              alt={`${projectTitle} — ${section.label}`}
-              loading="lazy"
-              decoding="async"
-              draggable="false"
-              className="absolute inset-0 h-full w-full object-cover"
-            />
+          <div
+            className={`relative w-full overflow-hidden bg-ink/5 ${aspectClass} ${gradeWrapClass}`}
+          >
+            {isVideo ? (
+              <video
+                src={mediaItem.src}
+                poster={mediaItem.poster}
+                autoPlay
+                muted
+                loop
+                playsInline
+                preload="auto"
+                aria-label={mediaItem.alt || `${projectTitle} — ${section.label}`}
+                className={`absolute inset-0 h-full w-full object-cover ${gradeMediaClass}`}
+              />
+            ) : (
+              <img
+                src={mediaItem.src}
+                alt={mediaItem.alt || `${projectTitle} — ${section.label}`}
+                loading="lazy"
+                decoding="async"
+                draggable="false"
+                className={`absolute inset-0 h-full w-full object-cover ${gradeMediaClass}`}
+              />
+            )}
+            {grade && <span aria-hidden="true" className={gradeTintClass} />}
           </div>
         </motion.div>
       )}
@@ -274,15 +309,16 @@ export default function CaseStudy({ slug }) {
           </p>
         </div>
 
-        {/* Content sections with images */}
+        {/* Content sections — each section's gallery item can be an
+            image URL string or a richer media object (e.g. video). */}
         {project.sections.map((section, i) => {
-          const src = images?.gallery?.[i];
+          const media = images?.gallery?.[i];
           return (
             <ProjectSection
               key={i}
               index={i}
               section={section}
-              src={src}
+              media={media}
               projectTitle={project.title}
             />
           );
@@ -292,8 +328,17 @@ export default function CaseStudy({ slug }) {
             defines additional images beyond the section ones. Each
             item declares its own col-span and aspect, so projects like
             Backyard dello Specchio can breathe with asymmetric pairs
-            and full-bleed landscape frames. */}
-        {images?.extraGallery?.length > 0 && (
+            and full-bleed landscape frames. When extraGalleryMode is
+            "slider", the same items feed the editorial slider instead
+            of the stacked grid. */}
+        {images?.extraGallery?.length > 0 && images.extraGalleryMode === "slider" && (
+          <ProjectGallerySlider
+            items={images.extraGallery}
+            projectTitle={project.title}
+          />
+        )}
+
+        {images?.extraGallery?.length > 0 && images.extraGalleryMode !== "slider" && (
           <div className="mt-12 grid grid-cols-12 gap-5 md:mt-16 md:gap-6 lg:gap-8">
             {images.extraGallery.map((item, i) => (
               <div
@@ -306,14 +351,28 @@ export default function CaseStudy({ slug }) {
                     item.aspect || "aspect-[3/2]"
                   }`}
                 >
-                  <img
-                    src={item.src}
-                    alt={item.alt || `${project.title} — ${i + 1}`}
-                    loading="lazy"
-                    decoding="async"
-                    draggable="false"
-                    className="absolute inset-0 h-full w-full object-cover"
-                  />
+                  {item.type === "video" ? (
+                    <video
+                      src={item.src}
+                      poster={item.poster}
+                      autoPlay
+                      muted
+                      loop
+                      playsInline
+                      preload="metadata"
+                      aria-label={item.alt || `${project.title} — ${i + 1}`}
+                      className="absolute inset-0 h-full w-full object-cover"
+                    />
+                  ) : (
+                    <img
+                      src={item.src}
+                      alt={item.alt || `${project.title} — ${i + 1}`}
+                      loading="lazy"
+                      decoding="async"
+                      draggable="false"
+                      className="absolute inset-0 h-full w-full object-cover"
+                    />
+                  )}
                 </div>
               </div>
             ))}

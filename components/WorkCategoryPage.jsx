@@ -127,7 +127,11 @@ export default function WorkCategoryPage({ categoryKey, projects = [] }) {
                         loading="lazy"
                         decoding="async"
                         draggable="false"
-                        className="media-grayscale absolute inset-0 h-full w-full object-cover transition-transform duration-[1100ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.04]"
+                        className={`media-grayscale absolute inset-0 h-full w-full object-cover ${
+                          p.tilt
+                            ? "card-tilt-correct"
+                            : "transition-transform duration-[1100ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.04]"
+                        }`}
                       />
                     </div>
                     <div className="mt-4 flex items-start justify-between gap-6">
