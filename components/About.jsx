@@ -43,7 +43,7 @@ export default function About() {
           <div className="order-2 col-span-12 md:order-1 md:col-span-6">
             <div
               data-reveal-media
-              className="relative aspect-[5/4] w-full overflow-hidden bg-ink/5 md:aspect-[4/3] lg:aspect-[5/4]"
+              className="relative aspect-[4/5] w-full overflow-hidden bg-ink/5 md:aspect-[4/3] lg:aspect-[5/4]"
             >
               <img
                 src="/images/studio_portrait.png"

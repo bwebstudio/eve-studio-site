@@ -17,6 +17,26 @@ import ProjectGallerySlider from "./ProjectGallerySlider";
 const EASE = [0.22, 1, 0.36, 1];
 
 /**
+ * Map a desktop aspect class from projects.js to a responsive pair:
+ * mobile is always 4/5 portrait (uniform editorial rhythm across the
+ * site on phones), desktop keeps the per-item aspect.
+ *
+ * Each md:* class must appear as a literal string here so Tailwind's
+ * content scanner picks it up — dynamic interpolation like
+ * `md:${aspect}` does NOT generate the class. Add new entries to this
+ * map when projects.js introduces a new aspect value.
+ */
+const RESPONSIVE_ASPECT = {
+  "aspect-[3/4]":   "aspect-[4/5] md:aspect-[3/4]",
+  "aspect-[3/2]":   "aspect-[4/5] md:aspect-[3/2]",
+  "aspect-[4/5]":   "aspect-[4/5] md:aspect-[4/5]",
+  "aspect-[16/9]":  "aspect-[4/5] md:aspect-[16/9]",
+  "aspect-[16/10]": "aspect-[4/5] md:aspect-[16/10]",
+};
+const responsiveAspect = (a) =>
+  RESPONSIVE_ASPECT[a] || `aspect-[4/5] md:${a || "aspect-[4/5]"}`;
+
+/**
  * Reverse-lookup which category a slug belongs to, using the same
  * PROJECTS_BY_CATEGORY map that drives /work/[category]. Lets the
  * case study show a proper "Work / Events" breadcrumb and link the
@@ -45,7 +65,7 @@ function ProjectSection({ index, section, media, projectTitle }) {
 
   const mediaItem = typeof media === "string" || !media ? { src: media } : media;
   const isVideo = mediaItem.type === "video";
-  const aspectClass = mediaItem.aspect || "aspect-[4/5]";
+  const aspectClass = responsiveAspect(mediaItem.aspect);
   // Grade-driven chromatic treatment. Each value (e.g. "warm-duotone",
   // "red-duotone") maps to a trio of CSS classes defined in globals.css:
   //   .media-<grade>-wrap  → hover anchor on the container
@@ -260,7 +280,7 @@ export default function CaseStudy({ slug }) {
           initial={{ opacity: 0, scale: 1.02 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 1.2, ease: EASE, delay: 0.15 }}
-          className="relative mt-12 aspect-[16/9] w-full overflow-hidden bg-ink/5 md:mt-16"
+          className="relative mt-12 aspect-[4/5] w-full overflow-hidden bg-ink/5 md:mt-16 md:aspect-[16/9]"
         >
           <img
             src={images?.hero}
@@ -347,9 +367,9 @@ export default function CaseStudy({ slug }) {
                 className={item.span || "col-span-12"}
               >
                 <div
-                  className={`relative w-full overflow-hidden bg-ink/5 ${
+                  className={`relative w-full overflow-hidden bg-ink/5 ${responsiveAspect(
                     item.aspect || "aspect-[3/2]"
-                  }`}
+                  )}`}
                 >
                   {item.type === "video" ? (
                     <video

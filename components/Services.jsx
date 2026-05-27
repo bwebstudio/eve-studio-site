@@ -82,7 +82,7 @@ export default function Services() {
                 className="group block"
               >
                 {/* Image — clean, no overlay */}
-                <div className="relative aspect-[4/3] w-full overflow-hidden bg-ink/5 md:aspect-[5/4]">
+                <div className="relative aspect-[4/5] w-full overflow-hidden bg-ink/5 md:aspect-[5/4]">
                   <img
                     src={s.image}
                     alt={s.name}

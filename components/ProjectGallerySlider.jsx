@@ -97,7 +97,7 @@ export default function ProjectGallerySlider({ items, projectTitle }) {
     >
       {/* Viewport */}
       <div
-        className="relative w-full overflow-hidden bg-ink/5 aspect-[4/3] md:aspect-[16/10]"
+        className="relative w-full overflow-hidden bg-ink/5 aspect-[4/5] md:aspect-[16/10]"
         data-cursor="media"
       >
         <AnimatePresence initial={false} custom={direction} mode="popLayout">

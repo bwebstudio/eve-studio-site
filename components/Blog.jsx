@@ -159,7 +159,7 @@ function BlogCard({ post }) {
         data-cursor-label="Read"
         className="block"
       >
-        <div className="relative aspect-[4/3] w-full overflow-hidden bg-ink/5 md:aspect-[5/4]">
+        <div className="relative aspect-[4/5] w-full overflow-hidden bg-ink/5 md:aspect-[5/4]">
           <img
             src={post.cover}
             alt={post.title}
