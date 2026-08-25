@@ -2,8 +2,9 @@ import Navigation from "@/components/Navigation";
 import BlogPost from "@/components/BlogPost";
 import SiteFooter from "@/components/SiteFooter";
 import content from "@/lib/content";
+import { BRAND } from "@/lib/brand";
 
-// Eve publishes weekly — we statically generate every post slug that
+// MAIT publishes weekly — we statically generate every post slug that
 // exists in the EN content map at build time so each note can be
 // crawled and linked individually. ES translations share the same
 // slug, so generating from EN covers both locales.
@@ -15,12 +16,12 @@ export function generateMetadata({ params }) {
   const post = content.en.blog.posts.find((p) => p.slug === params.slug);
   if (!post) {
     return {
-      title: "Note — EVE Studio",
-      description: "From the studio. Eve, Madrid-based creative studio.",
+      title: `Note — ${BRAND.name}`,
+      description: `From the studio. ${BRAND.name}, creative studio.`,
     };
   }
   return {
-    title: `${post.title} — EVE Studio`,
+    title: `${post.title} — ${BRAND.name}`,
     description: post.excerpt,
   };
 }

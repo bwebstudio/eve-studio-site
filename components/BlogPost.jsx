@@ -115,7 +115,7 @@ export default function BlogPost({ slug }) {
               style={{ lineHeight: 1.65 }}
             >
               This note is a placeholder. The CMS isn’t wired yet — the
-              final body of the article will live here once Eve publishes
+              final body of the article will live here once MAIT Studio publishes
               it. Layout, type and rhythm are locked in.
             </p>
             <p

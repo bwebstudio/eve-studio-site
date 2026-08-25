@@ -79,7 +79,7 @@ export default function Blog({ limit, asSection = false }) {
             <div className="flex items-baseline justify-between text-[11px] uppercase tracking-[0.22em] text-ink/60">
               <span>{b.sectionLabel}</span>
               <TransitionLink href="/" className="link-underline text-ink">
-                ← Index
+                {t.ui.index}
               </TransitionLink>
             </div>
             <div className="mt-8 grid grid-cols-12 gap-6 md:mt-10 md:gap-8">

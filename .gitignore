@@ -9,3 +9,9 @@ out
 *.MOV
 *.mov
 public/images/work/xeri-gin-focaccia-beat/barman-xeri.mp4
+
+# Raw client deliveries dropped into public/ (Drive exports, HEIC/MOV
+# originals). Everything in public/ is served publicly, so these would
+# be downloadable from the live site. Only the optimised derivatives
+# (.webp / .mp4) belong in the repo.
+public/*.zip

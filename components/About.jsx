@@ -47,7 +47,7 @@ export default function About() {
             >
               <img
                 src="/images/studio_portrait.png"
-                alt="Eve studio portrait"
+                alt="MAIT Studio — studio portrait"
                 className="absolute inset-0 h-full w-full object-cover"
                 draggable="false"
               />
@@ -74,7 +74,7 @@ export default function About() {
               <a
                 href="#services"
                 data-cursor="cta"
-                className="group inline-flex items-center gap-3 border-b border-ink pb-2 text-[11px] uppercase tracking-[0.22em] text-ink"
+                className="group -mt-4 inline-flex items-center gap-3 border-b border-ink pb-2 pt-4 text-[11px] uppercase tracking-[0.22em] text-ink"
               >
                 <span>{a.readMore}</span>
                 <span
@@ -88,7 +88,7 @@ export default function About() {
           </div>
         </div>
 
-        {/* Compact pillars row — preserved from Eve's own content,
+        {/* Compact pillars row — preserved from the studio's own content,
             kept as a quiet editorial signature below the main block. */}
         <div className="mt-12 grid grid-cols-2 gap-x-6 gap-y-6 border-t border-ink/10 pt-8 md:mt-16 md:grid-cols-4 md:gap-x-8 md:pt-10">
           {a.pillars.map((p) => (

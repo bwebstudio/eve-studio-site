@@ -1,11 +1,11 @@
 import Navigation from "@/components/Navigation";
 import AllServicesPage from "@/components/AllServicesPage";
 import SiteFooter from "@/components/SiteFooter";
+import { BRAND } from "@/lib/brand";
 
 export const metadata = {
-  title: "Services — EVE Studio",
-  description:
-    "Events, social media, photo & video. Three disciplines, one studio — Eve, a Madrid-based creative studio.",
+  title: `Services — ${BRAND.name}`,
+  description: `Events, brand experiences, photo & video. Three disciplines, one studio — ${BRAND.name}.`,
 };
 
 export default function ServicesPage() {

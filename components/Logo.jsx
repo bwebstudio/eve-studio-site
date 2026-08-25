@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import useAppReady from "@/lib/useAppReady";
+import { BRAND } from "@/lib/brand";
 import TransitionLink from "./TransitionLink";
 
 /**
@@ -19,9 +20,12 @@ const EASE = [0.22, 1, 0.36, 1];
  *  - compact : scroll-triggered header state, quietly condensed
  *
  * Amplitudes are deliberately small — this is identity, not a headline.
- * Wordmark uses General Sans 500 with an Editorial italic `.` between
- * "eve" and "studio", mirroring the footer wordmark so the brand reads
- * as one mark across the site.
+ * Typographic fallback wordmark (used until the supplied logo asset is
+ * wired up in lib/brand.js): the studio name set in General Sans 500,
+ * the "." as ordinary punctuation in the same face. Same treatment in
+ * the footer and the preloader, so the brand reads as one mark across
+ * the site. This is the name set in the site's own type — not a
+ * reconstruction of the logo.
  */
 const wordVariants = {
   hidden: {
@@ -74,9 +78,9 @@ const INTRO_MS = 1100;
 const SETTLE_HOLD_MS = 220;
 
 export default function Logo({
-  text = "eve.studio",
+  text = BRAND.wordmark,
   href = "/",
-  ariaLabel = "EVE Studio — Home",
+  ariaLabel = `${BRAND.name} — Home`,
   className = "",
   /** Reacts to window scroll, swapping settled ↔ compact. */
   compactOnScroll = true,
@@ -84,6 +88,8 @@ export default function Logo({
   immediate = false,
   /** Delay before intro fires, lets the hero start breathing first. */
   introDelay = 0.05,
+  /** Rendered on a dark surface — swaps to the white logo variant. */
+  onDark = false,
   onClick,
 }) {
   const reduce = useReducedMotion();
@@ -138,6 +144,41 @@ export default function Logo({
 
   const chars = text.split("");
 
+  // ── Supplied logo asset ────────────────────────────────────────────
+  // As soon as `BRAND.logo.src` is filled in (see lib/brand.js) the mark
+  // renders as the delivered file: fixed height, width:auto, so the
+  // asset's own proportions are preserved at every breakpoint, and the
+  // intrinsic width/height are passed through so the browser reserves
+  // the right box (no layout shift while it loads). It quietly condenses
+  // on scroll like the wordmark does, using the same easing.
+  const { logo } = BRAND;
+  if (logo?.src) {
+    const height = scrolled && compactOnScroll
+      ? logo.heights.compact
+      : logo.heights.settled;
+    // The mark is solid black artwork, so it needs its white counterpart
+    // on dark surfaces (the mobile-menu overlay).
+    const src = onDark && logo.srcLight ? logo.srcLight : logo.src;
+    return (
+      <TransitionLink
+        href={href}
+        aria-label={ariaLabel}
+        onClick={onClick}
+        className={`flex flex-shrink-0 cursor-pointer items-center ${className}`}
+      >
+        <img
+          src={src}
+          alt={logo.alt || BRAND.name}
+          width={logo.width || undefined}
+          height={logo.height || undefined}
+          draggable="false"
+          className="block w-auto transition-[height] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none"
+          style={{ height: `${height}px` }}
+        />
+      </TransitionLink>
+    );
+  }
+
   return (
     <TransitionLink
       href={href}
@@ -162,10 +203,6 @@ export default function Logo({
           <motion.span
             key={`${ch}-${i}`}
             variants={letterVariants}
-            // The "." between "eve" and "studio" stays Editorial italic
-            // — same signature used by the footer wordmark — so the mark
-            // reads as identity rather than a generic sans logotype.
-            className={ch === "." ? "font-editorial-italic" : undefined}
             style={{ display: "inline-block" }}
           >
             {ch === " " ? " " : ch}

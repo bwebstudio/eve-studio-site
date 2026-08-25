@@ -5,13 +5,8 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { revealOnScroll } from "@/lib/animations";
 import useLang from "@/lib/useLang";
+import { serviceHref } from "@/lib/serviceRoutes";
 import TransitionLink from "./TransitionLink";
-
-const SERVICE_HREF = {
-  events: "/work/events",
-  "social-media": "/work/social-media",
-  "photo-video": "/work/photo-video",
-};
 
 /**
  * "WHAT WE DO" — Kaiora-style services strip.
@@ -71,7 +66,7 @@ export default function Services() {
         {/* Three image cards — image on top, label and tagline below */}
         <div className="mt-8 grid grid-cols-1 gap-x-6 gap-y-10 md:mt-10 md:grid-cols-3 md:gap-x-6 lg:gap-x-8">
           {t.services.items.map((s) => {
-            const href = SERVICE_HREF[s.key] || "/#work";
+            const href = serviceHref(s.key);
             return (
               <TransitionLink
                 key={s.key}

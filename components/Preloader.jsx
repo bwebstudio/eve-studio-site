@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import useAppReady from "@/lib/useAppReady";
+import { BRAND } from "@/lib/brand";
 
 // Editorial preloader — black stage with discreet film grain, crop
 // marks at the four corners, meta rails at top and bottom, and a
@@ -316,7 +317,7 @@ export default function Preloader() {
           left: 0,
           right: 0,
           height: "1px",
-          background: "#efeae0",
+          background: "#faf8f5",
           opacity: 0,
           transform: "scaleX(0)",
           transformOrigin: "50% 50%",
@@ -357,8 +358,8 @@ export default function Preloader() {
           }}
         >
           <svg width="12" height="12" viewBox="0 0 12 12">
-            <line x1="0" y1="6" x2="12" y2="6" stroke="#efeae0" strokeWidth="1" />
-            <line x1="6" y1="0" x2="6" y2="12" stroke="#efeae0" strokeWidth="1" />
+            <line x1="0" y1="6" x2="12" y2="6" stroke="#faf8f5" strokeWidth="1" />
+            <line x1="6" y1="0" x2="6" y2="12" stroke="#faf8f5" strokeWidth="1" />
           </svg>
         </div>
       ))}
@@ -368,7 +369,7 @@ export default function Preloader() {
         style={{
           position: "absolute",
           inset: 0,
-          color: "#efeae0",
+          color: "#faf8f5",
           pointerEvents: "none",
         }}
       >
@@ -387,7 +388,7 @@ export default function Preloader() {
             transform: "translateY(14px)",
           }}
         >
-          <span>EVE — Creative Studio</span>
+          <span>{BRAND.name} — Creative Studio</span>
           <span>Madrid · 2026</span>
         </div>
 
@@ -411,22 +412,12 @@ export default function Preloader() {
                 ...wordmarkStyle,
                 display: "block",
                 color: "transparent",
-                WebkitTextStroke: "1px #efeae0",
+                WebkitTextStroke: "1px #faf8f5",
                 clipPath: "inset(-0.2em 50% -0.2em 50%)",
                 WebkitClipPath: "inset(-0.2em 50% -0.2em 50%)",
               }}
             >
-              eve
-              <span
-                style={{
-                  fontFamily: "var(--font-editorial, serif)",
-                  fontStyle: "italic",
-                  fontWeight: 300,
-                }}
-              >
-                .
-              </span>
-              studio
+              {BRAND.wordmark}
             </span>
             <span
               ref={wordmarkFillRef}
@@ -435,21 +426,11 @@ export default function Preloader() {
                 position: "absolute",
                 top: 0,
                 left: 0,
-                color: "#efeae0",
+                color: "#faf8f5",
                 opacity: 0,
               }}
             >
-              eve
-              <span
-                style={{
-                  fontFamily: "var(--font-editorial, serif)",
-                  fontStyle: "italic",
-                  fontWeight: 300,
-                }}
-              >
-                .
-              </span>
-              studio
+              {BRAND.wordmark}
             </span>
           </div>
 
@@ -524,7 +505,7 @@ export default function Preloader() {
             left: 0,
             width: "100%",
             height: "1px",
-            background: "rgba(239, 234, 224, 0.85)",
+            background: "rgba(250, 248, 245, 0.85)",
             transform: "scaleX(0)",
             transformOrigin: "0 50%",
           }}

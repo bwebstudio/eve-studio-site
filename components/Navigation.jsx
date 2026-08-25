@@ -9,8 +9,46 @@ import Logo from "./Logo";
 import MobileMenu from "./MobileMenu";
 import WorkOverlay from "./WorkOverlay";
 
+/**
+ * EN · ES · IT switch. One button per locale (rather than a two-state
+ * toggle) so the third language is discoverable and every option is
+ * reachable in a single tap/keystroke. `compact` drops the tracking a
+ * touch for the mobile rail. py-3 gives each button a ~41px tall hit
+ * area — comfortably tappable — without changing where the label sits.
+ */
+function LanguageSelector({ lang, setLang, locales, localeLabels, label, compact = false }) {
+  return (
+    <div
+      role="group"
+      aria-label={label}
+      className={`flex items-center text-ink/60 ${compact ? "gap-1 text-[11px]" : "gap-1.5"}`}
+    >
+      {locales.map((code, i) => (
+        <span key={code} className="flex items-center">
+          {i > 0 && (
+            <span aria-hidden="true" className="mr-1 text-ink/35 md:mr-1.5">
+              ·
+            </span>
+          )}
+          <button
+            type="button"
+            onClick={() => setLang(code)}
+            aria-pressed={lang === code}
+            lang={code}
+            className={`py-3 uppercase tracking-[0.18em] transition-colors ${
+              lang === code ? "text-ink" : "hover:text-ink focus-visible:text-ink"
+            }`}
+          >
+            {localeLabels[code]}
+          </button>
+        </span>
+      ))}
+    </div>
+  );
+}
+
 export default function Navigation() {
-  const { t, lang, toggle, setLang } = useLang();
+  const { t, lang, setLang, locales, localeLabels } = useLang();
   const { ready } = useAppReady();
   const [time, setTime] = useState("");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -58,7 +96,11 @@ export default function Navigation() {
   const primaryLinks = t.nav.links.filter((link) => link.href !== "/");
 
   const handleNavClick = (link) => (e) => {
-    // "Work" intercepts to open the overlay instead of jumping to #work.
+    // Any nav item declaring kind:"work-overlay" opens the editorial
+    // category overlay instead of navigating. No item currently does —
+    // the "Work" entry was removed from the menu — but <WorkOverlay> and
+    // this hook are kept intact so the entry can be restored from
+    // content.js alone once the portfolio is ready.
     if (link.kind === "work-overlay") {
       e.preventDefault();
       setIsWorkOpen(true);
@@ -96,47 +138,28 @@ export default function Navigation() {
 
         {/* Right rail — language + clock, subtle */}
         <div className="hidden items-center gap-5 text-[11px] uppercase tracking-[0.18em] md:flex">
-          <span className="hidden text-ink/45 xl:inline">
+          <span className="hidden text-ink/60 xl:inline">
             Madrid · {time}
           </span>
-          <div
-            role="group"
-            aria-label="Language selector"
-            className="flex items-center gap-1.5 text-ink/40"
-          >
-            <button
-              type="button"
-              onClick={() => setLang("en")}
-              aria-pressed={lang === "en"}
-              className={`transition-colors ${
-                lang === "en" ? "text-ink" : "hover:text-ink/70"
-              }`}
-            >
-              EN
-            </button>
-            <span aria-hidden="true" className="text-ink/30">·</span>
-            <button
-              type="button"
-              onClick={() => setLang("es")}
-              aria-pressed={lang === "es"}
-              className={`transition-colors ${
-                lang === "es" ? "text-ink" : "hover:text-ink/70"
-              }`}
-            >
-              ES
-            </button>
-          </div>
+          <LanguageSelector
+            lang={lang}
+            setLang={setLang}
+            locales={locales}
+            localeLabels={localeLabels}
+            label={t.ui.languageSelector}
+          />
         </div>
 
         {/* Mobile right cluster */}
-        <div className="flex items-center gap-5 md:hidden">
-          <button
-            type="button"
-            onClick={toggle}
-            className="text-[11px] uppercase tracking-[0.18em] text-ink/70"
-          >
-            {lang === "en" ? "ES" : "EN"}
-          </button>
+        <div className="flex items-center gap-4 md:hidden">
+          <LanguageSelector
+            lang={lang}
+            setLang={setLang}
+            locales={locales}
+            localeLabels={localeLabels}
+            label={t.ui.languageSelector}
+            compact
+          />
           <button
             type="button"
             onClick={() => setIsMenuOpen(true)}

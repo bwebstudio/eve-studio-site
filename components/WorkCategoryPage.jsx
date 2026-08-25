@@ -7,12 +7,14 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { revealOnScroll } from "@/lib/animations";
 import useLang from "@/lib/useLang";
 import TransitionLink from "./TransitionLink";
+import WorkCard from "./WorkCard";
 
 const EASE = [0.22, 1, 0.36, 1];
 
 /**
- * Shared layout for the three Work category routes (/work/events,
- * /work/social-media, /work/photo-video).
+ * Shared layout for the Work category routes (/work/events and
+ * /work/photo-video). The third pillar, Brand Experiences, has its own
+ * service page instead — see /services/brand-experiences.
  *
  * Renders the category eyebrow / title / intro, an optional grid of
  * projects (sourced from the parent route), and a CTA back to
@@ -58,7 +60,7 @@ export default function WorkCategoryPage({ categoryKey, projects = [] }) {
         <div className="flex items-baseline justify-between text-[11px] uppercase tracking-[0.22em] text-ink/60">
           <span>{cat.eyebrow}</span>
           <TransitionLink href="/" className="link-underline text-ink">
-            ← Index
+            {t.ui.index}
           </TransitionLink>
         </div>
 
@@ -111,47 +113,7 @@ export default function WorkCategoryPage({ categoryKey, projects = [] }) {
                   : i % 3 === 1
                   ? "md:col-span-5 md:mt-12"
                   : "md:col-span-6 md:col-start-4";
-              return (
-                <article
-                  key={p.slug}
-                  className={`group col-span-12 ${span}`}
-                  data-cursor="media"
-                  data-cursor-label="View"
-                  data-reveal
-                >
-                  <TransitionLink href={`/work/${p.slug}`} className="block">
-                    <div className="relative aspect-[4/5] w-full overflow-hidden">
-                      <img
-                        src={p.cover}
-                        alt={p.title}
-                        loading="lazy"
-                        decoding="async"
-                        draggable="false"
-                        className={`media-grayscale absolute inset-0 h-full w-full object-cover ${
-                          p.tilt
-                            ? "card-tilt-correct"
-                            : "transition-transform duration-[1100ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.04]"
-                        }`}
-                      />
-                    </div>
-                    <div className="mt-4 flex items-start justify-between gap-6">
-                      <div>
-                        <h2 className="text-2xl text-ink md:text-3xl">
-                          {p.title}
-                        </h2>
-                        <p className="mt-1 text-[12px] uppercase tracking-[0.18em] text-ink/60">
-                          {p.discipline}
-                        </p>
-                      </div>
-                      {p.year && (
-                        <span className="text-[11px] uppercase tracking-[0.22em] text-ink/50">
-                          {p.year}
-                        </span>
-                      )}
-                    </div>
-                  </TransitionLink>
-                </article>
-              );
+              return <WorkCard key={p.slug} project={p} className={span} />;
             })}
           </div>
         ) : (
@@ -177,7 +139,7 @@ export default function WorkCategoryPage({ categoryKey, projects = [] }) {
         {/* Footer row */}
         <div className="mt-16 flex items-center justify-between border-t border-ink/10 pt-6 text-[11px] uppercase tracking-[0.22em] text-ink/60 md:mt-24 md:pt-7">
           <TransitionLink href="/" className="link-underline text-ink">
-            ← Back to studio
+            {t.ui.backToStudio}
           </TransitionLink>
           <span>{t.work.sectionIndex}</span>
         </div>

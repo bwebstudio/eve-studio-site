@@ -6,15 +6,10 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { revealOnScroll } from "@/lib/animations";
 import useLang from "@/lib/useLang";
+import { serviceHref } from "@/lib/serviceRoutes";
 import TransitionLink from "./TransitionLink";
 
 const EASE = [0.22, 1, 0.36, 1];
-
-const SERVICE_HREF = {
-  events: "/work/events",
-  "social-media": "/work/social-media",
-  "photo-video": "/work/photo-video",
-};
 
 /**
  * Dedicated /services page — a deeper, less compressed companion to
@@ -26,6 +21,16 @@ const SERVICE_HREF = {
  * header, big sans h1, lede, footer row) so navigation feels like
  * one coherent system.
  */
+/**
+ * Page lede — only used by this route, so it lives beside it rather than
+ * bloating content.js. Add a locale key when a new language is added.
+ */
+const SERVICES_LEDE = {
+  en: "Three disciplines, one studio. Each is treated as a complete system — strategy, direction and execution under one editorial eye.",
+  es: "Tres disciplinas, un estudio. Cada una se trabaja como un sistema completo — estrategia, dirección y ejecución bajo una misma mirada editorial.",
+  it: "Tre discipline, un solo studio. Ognuna è trattata come un sistema completo — strategia, direzione ed esecuzione sotto un unico sguardo editoriale.",
+};
+
 export default function AllServicesPage() {
   const { t, lang } = useLang();
   const rootRef = useRef(null);
@@ -45,17 +50,12 @@ export default function AllServicesPage() {
     return () => ctx.revert();
   }, []);
 
-  const pageTitle = lang === "es" ? "Servicios" : "Services";
-  const pageLede =
-    lang === "es"
-      ? "Tres disciplinas, un estudio. Cada una se trabaja como un sistema completo — estrategia, dirección y ejecución bajo una misma mirada editorial."
-      : "Three disciplines, one studio. Each is treated as a complete system — strategy, direction and execution under one editorial eye.";
-  const exploreCta =
-    lang === "es" ? "Ver los proyectos" : "Explore the work";
-  const startCta =
-    lang === "es" ? "Empezar un proyecto" : "Start a project";
-  const indexLabel = lang === "es" ? "← Inicio" : "← Index";
-  const backLabel = lang === "es" ? "← Volver al estudio" : "← Back to studio";
+  const pageTitle = t.services.sectionLabel.replace(/[()]/g, "");
+  const pageLede = SERVICES_LEDE[lang] || SERVICES_LEDE.en;
+  const exploreCta = t.ui.exploreWork;
+  const startCta = t.ui.startProject;
+  const indexLabel = t.ui.index;
+  const backLabel = t.ui.backToStudio;
 
   return (
     <section
@@ -113,7 +113,7 @@ export default function AllServicesPage() {
         {/* Three service blocks — full editorial */}
         <div className="mt-16 flex flex-col md:mt-20">
           {t.services.items.map((s, i) => {
-            const href = SERVICE_HREF[s.key] || "/#work";
+            const href = serviceHref(s.key);
             const imageLeft = i % 2 === 1;
             return (
               <article

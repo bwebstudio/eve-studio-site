@@ -7,15 +7,17 @@ module.exports = {
   ],
   theme: {
     extend: {
+      // Mirrors the custom properties in globals.css (:root) — keep the
+      // two in sync. `bg` is the site ground: a warm off-white / soft
+      // bone, extremely light and neutral without reading beige.
       colors: {
-        bg: "#EFEAE0",
-        // Muted, slightly greyer cream used by the clients band — sits
-        // within the same family as bg but reads a step darker, giving
-        // the brands strip its own quiet moment without a hard contrast.
-        "bg-mute": "#D9D2C3",
+        bg: "#FAF8F5",
+        // One quiet step darker, same warm family — used by the clients
+        // band so the strip gets its own moment without a hard contrast.
+        "bg-mute": "#F1EDE7",
         ink: "#111111",
-        secondary: "#BFB8AF",
-        accent: "#E6DFD7",
+        secondary: "#B3ACA4",
+        accent: "#EFE9E1",
       },
       fontFamily: {
         editorial: ["var(--font-editorial)", "serif"],

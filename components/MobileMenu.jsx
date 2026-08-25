@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 import Link from "next/link";
 import { gsap } from "gsap";
 import useLang from "@/lib/useLang";
+import { BRAND } from "@/lib/brand";
 import Logo from "./Logo";
 
 export default function MobileMenu({ isOpen, onClose, onOpenWorkOverlay }) {
@@ -224,8 +225,8 @@ export default function MobileMenu({ isOpen, onClose, onOpenWorkOverlay }) {
       style={{ display: "none", backgroundColor: "#0B0B0B" }}
     >
       <div ref={backgroundRef} aria-hidden="true" className="pointer-events-none absolute inset-0 flex items-center justify-center">
-        <span className="font-editorial italic" style={{ color: "rgba(239, 234, 224, 0.055)", fontSize: "clamp(20rem, 140vw, 54rem)", lineHeight: 0.85, letterSpacing: "-0.05em", whiteSpace: "nowrap" }}>
-          eve
+        <span className="font-editorial italic" style={{ color: "rgba(250, 248, 245, 0.055)", fontSize: "clamp(20rem, 140vw, 54rem)", lineHeight: 0.85, letterSpacing: "-0.05em", whiteSpace: "nowrap" }}>
+          {BRAND.shortName.toLowerCase()}
         </span>
       </div>
       <div aria-hidden="true" className="hero-grain pointer-events-none absolute inset-0" style={{ opacity: 0.22 }} />
@@ -235,6 +236,7 @@ export default function MobileMenu({ isOpen, onClose, onOpenWorkOverlay }) {
           href="/"
           compactOnScroll={false}
           immediate
+          onDark
           onClick={() => {
             resetBodyScrollLock();
             onClose();

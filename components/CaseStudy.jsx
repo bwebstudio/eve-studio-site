@@ -10,6 +10,7 @@ import projects, {
   PROJECT_ORDER,
   PROJECT_IMAGES,
   PROJECTS_BY_CATEGORY,
+  CATEGORY_HREF,
 } from "@/lib/projects";
 import TransitionLink from "./TransitionLink";
 import ProjectGallerySlider from "./ProjectGallerySlider";
@@ -173,7 +174,9 @@ export default function CaseStudy({ slug }) {
 
   const categoryKey = findCategoryKey(slug);
   const category = categoryKey ? t.workCategories[categoryKey] : null;
-  const backHref = categoryKey ? `/work/${categoryKey}` : "/";
+  // Not every pillar has a work archive (Brand Experiences links to its
+  // service page), so the back link resolves through the route map.
+  const backHref = (categoryKey && CATEGORY_HREF[categoryKey]) || "/";
 
   const currentIdx = PROJECT_ORDER.indexOf(slug);
   const nextSlug = PROJECT_ORDER[(currentIdx + 1) % PROJECT_ORDER.length];
@@ -200,25 +203,17 @@ export default function CaseStudy({ slug }) {
     );
   }
 
-  const servicesLabel = lang === "es" ? "Servicios" : "Services";
-  const clientLabel = lang === "es" ? "Cliente" : "Client";
-  const locationLabel = lang === "es" ? "Ubicación" : "Location";
-  const yearLabel = lang === "es" ? "Año" : "Year";
-  const nextLabel = lang === "es" ? "Siguiente proyecto" : "Next project";
-  const pressLabel = lang === "es" ? "Prensa" : "Press";
-  const featuredByLabel = lang === "es" ? "Publicado en" : "Featured by";
-  const backToStudioLabel = lang === "es" ? "← Volver al estudio" : "← Back to studio";
-  const backToCategoryLabel = category
-    ? lang === "es"
-      ? `← ${category.title}`
-      : `← ${category.title}`
-    : null;
+  const servicesLabel = t.ui.services;
+  const clientLabel = t.ui.client;
+  const locationLabel = t.ui.location;
+  const yearLabel = t.ui.year;
+  const nextLabel = t.ui.nextProject;
+  const pressLabel = t.ui.press;
+  const featuredByLabel = t.ui.featuredBy;
+  const backToStudioLabel = t.ui.backToStudio;
+  const backToCategoryLabel = category ? `← ${category.title}` : null;
 
-  const eyebrow = category
-    ? category.eyebrow
-    : lang === "es"
-    ? "Trabajo"
-    : "Work";
+  const eyebrow = category ? category.eyebrow : t.ui.work;
 
   return (
     <section
@@ -228,9 +223,20 @@ export default function CaseStudy({ slug }) {
       <div className="mx-auto max-w-frame px-6 pb-[80px] md:px-10 md:pb-[112px] lg:px-12 lg:pb-[128px]">
         {/* Eyebrow + back link — same pattern as WorkCategoryPage */}
         <div className="flex items-baseline justify-between text-[11px] uppercase tracking-[0.22em] text-ink/60">
-          <span>{eyebrow}</span>
+          <span className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+            {eyebrow}
+            {/* Written-in-house placeholder copy, flagged so it can't be
+                mistaken for approved text about a real client. Remove
+                `draft: true` from the project in lib/projects.js and this
+                disappears. */}
+            {project.draft && (
+              <span className="border border-ink/25 px-1.5 py-0.5 text-[9px] tracking-[0.18em] text-ink/55">
+                {t.ui.draftCopy}
+              </span>
+            )}
+          </span>
           <TransitionLink href={backHref} className="link-underline text-ink">
-            {category ? backToCategoryLabel : "← Index"}
+            {category ? backToCategoryLabel : t.ui.index}
           </TransitionLink>
         </div>
 
@@ -269,7 +275,7 @@ export default function CaseStudy({ slug }) {
               data-magnetic="0.2"
               className="link-underline text-[11px] uppercase tracking-[0.22em] text-ink"
             >
-              {lang === "es" ? "Empezar un proyecto" : "Start a project"} ↗
+              {t.ui.startProject} ↗
             </a>
           </div>
         </div>
