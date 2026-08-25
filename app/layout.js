@@ -3,28 +3,34 @@ import SmoothScroll from "@/components/SmoothScroll";
 import Cursor from "@/components/Cursor";
 import Providers from "@/components/Providers";
 import Preloader from "@/components/Preloader";
+import { BRAND } from "@/lib/brand";
 
 export const metadata = {
-  title: "EVE — Creative Studio",
-  description:
-    "EVE is a Madrid-based creative studio shaping brand identity, visual content and strategic connections for contemporary brands.",
-  metadataBase: new URL("https://eve.studio"),
+  title: `${BRAND.name} — Creative Studio`,
+  description: `${BRAND.name} is a creative studio shaping brand identity, brand experiences and visual content for contemporary brands.`,
+  // Canonical origin for every relative URL in metadata (OG images,
+  // canonicals). Sourced from BRAND.siteUrl — see lib/brand.js.
+  metadataBase: new URL(BRAND.siteUrl),
+  applicationName: BRAND.name,
   openGraph: {
-    title: "EVE — Creative Studio",
+    siteName: BRAND.name,
+    title: `${BRAND.name} — Creative Studio`,
     description:
-      "Creative direction, visual content and brand connections. A Madrid-based studio.",
+      "Events, brand experiences, photo & video. Creative direction and production under one roof.",
     type: "website",
   },
 };
 
 export const viewport = {
-  themeColor: "#EFEAE0",
+  themeColor: "#FAF8F5",
   width: "device-width",
   initialScale: 1,
 };
 
 export default function RootLayout({ children }) {
   return (
+    // `lang` is the default locale; LangProvider keeps document.
+    // documentElement.lang in sync when the visitor switches language.
     <html lang="en" className="bg-bg">
       <head>
         {/* General Sans is the primary editorial sans, served from

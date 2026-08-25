@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { BRAND } from "@/lib/brand";
 
 /**
  * POST /api/contact
@@ -10,8 +11,8 @@ import { NextResponse } from "next/server";
  *
  * Required env (production):
  *   - RESEND_API_KEY   — Resend account key
- *   - CONTACT_FROM     — verified sender, e.g. "Eve Studio <hello@eve.studio>"
- *   - CONTACT_TO       — destination, e.g. "hello@eve.studio"
+ *   - CONTACT_FROM     — verified sender, e.g. "MAIT Studio <hello@maitstudio.com>"
+ *   - CONTACT_TO       — destination, e.g. "hello@maitstudio.com"
  *
  * Body shape:
  *   { name, company?, email, phone?, service?, budget?, message, consent, lang? }
@@ -53,8 +54,8 @@ export async function POST(request) {
 
   const apiKey = process.env.RESEND_API_KEY;
   const from =
-    process.env.CONTACT_FROM || "Eve Studio <hello@eve.studio>";
-  const to = process.env.CONTACT_TO || "hello@eve.studio";
+    process.env.CONTACT_FROM || `${BRAND.name} <${BRAND.email}>`;
+  const to = process.env.CONTACT_TO || BRAND.email;
 
   const subject = `New enquiry — ${name}${company ? ` (${company})` : ""}`;
 
