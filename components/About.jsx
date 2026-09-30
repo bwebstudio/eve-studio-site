@@ -7,13 +7,13 @@ import { revealOnScroll } from "@/lib/animations";
 import useLang from "@/lib/useLang";
 
 /**
- * About / WHO WE ARE — Kaiora-style compact block. Image left, eyebrow
+ * About / WHO WE ARE. Kaiora-style compact block. Image left, eyebrow
  * + body + READ MORE on the right. The big decorative title that used
  * to sit above the body has been removed: in this layout the eyebrow
  * IS the title, and the brand's editorial moment happens at the hero.
  *
  * The pillars (Vision / Philosophy / Creative identity / Brand approach)
- * still live in content.js — we render them as an optional compact
+ * still live in content.js, so we render them as an optional compact
  * 4-up row below the main block, separated by a hairline.
  */
 export default function About() {
@@ -37,9 +37,9 @@ export default function About() {
       className="relative w-full border-t border-ink/10 bg-bg pt-12 pb-14 md:pt-16 md:pb-20 lg:pt-20 lg:pb-24"
     >
       <div className="mx-auto max-w-frame px-6 md:px-10 lg:px-12">
-        {/* 2-column main block — image left, text right (Kaiora order) */}
+        {/* 2-column main block: image left, text right (Kaiora order) */}
         <div className="grid grid-cols-12 gap-6 md:gap-10 lg:gap-14">
-          {/* LEFT — editorial image */}
+          {/* LEFT: editorial image */}
           <div className="order-2 col-span-12 md:order-1 md:col-span-6">
             <div
               data-reveal-media
@@ -47,14 +47,14 @@ export default function About() {
             >
               <img
                 src="/images/studio_portrait.png"
-                alt="MAIT Studio — studio portrait"
+                alt="MAIT Studio, studio portrait"
                 className="absolute inset-0 h-full w-full object-cover"
                 draggable="false"
               />
             </div>
           </div>
 
-          {/* RIGHT — eyebrow + body + READ MORE */}
+          {/* RIGHT: eyebrow + body + READ MORE */}
           <div className="order-1 col-span-12 flex flex-col justify-center md:order-2 md:col-span-6">
             <p
               data-reveal
@@ -63,13 +63,19 @@ export default function About() {
             >
               {a.eyebrow}
             </p>
-            <p
-              data-reveal
-              className="mt-5 max-w-[44ch] text-base text-ink/75 md:mt-6 md:text-[17px]"
-              style={{ lineHeight: 1.55 }}
-            >
-              {a.lede}
-            </p>
+            {/* The studio presentation runs to several paragraphs, so the
+                lede is an array. A plain string still renders as one. */}
+            <div data-reveal className="mt-5 max-w-[44ch] md:mt-6">
+              {(Array.isArray(a.lede) ? a.lede : [a.lede]).map((para, i) => (
+                <p
+                  key={i}
+                  className={`text-base text-ink/75 md:text-[17px] ${i > 0 ? "mt-4" : ""}`}
+                  style={{ lineHeight: 1.55 }}
+                >
+                  {para}
+                </p>
+              ))}
+            </div>
             <div data-reveal className="mt-7 md:mt-8">
               <a
                 href="#services"
@@ -88,11 +94,16 @@ export default function About() {
           </div>
         </div>
 
-        {/* Compact pillars row — preserved from the studio's own content,
+        {/* Compact pillars row, preserved from the studio's own content,
             kept as a quiet editorial signature below the main block. */}
         <div className="mt-12 grid grid-cols-2 gap-x-6 gap-y-6 border-t border-ink/10 pt-8 md:mt-16 md:grid-cols-4 md:gap-x-8 md:pt-10">
-          {a.pillars.map((p) => (
-            <article key={p.label} data-reveal>
+          {a.pillars.map((p, i) => (
+            // Keyed by position, not by `p.label`: the label is translated,
+            // so keying on it made React throw these nodes away and build
+            // new ones on every language switch. The reveal pass had
+            // already run by then, and the replacements stayed at the
+            // CSS `opacity: 0` that [data-reveal] starts from.
+            <article key={i} data-reveal>
               <p className="text-[10px] uppercase tracking-[0.24em] text-ink/45">
                 {p.label}
               </p>
