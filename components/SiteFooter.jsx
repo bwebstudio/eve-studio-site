@@ -6,11 +6,11 @@ import TransitionLink from "./TransitionLink";
 
 /**
  * Site-wide footer on the SAME light background as the rest of the
- * site — matches the Kaiora reference, which avoids the dark band
+ * site, matching the Kaiora reference, which avoids the dark band
  * entirely so the home reads as one continuous editorial surface.
  *
  * Layout: big "mait.studio" wordmark (one word, set entirely in the
- * site's sans — the "." is plain punctuation) + italic tagline on the
+ * site's sans, the "." being plain punctuation) + italic tagline on the
  * left,
  * INFO + SOCIAL columns on the right, and a compact bottom rail
  * with copyright + nav links + "Crafted in Madrid".
@@ -22,17 +22,17 @@ export default function SiteFooter() {
   return (
     <footer className="relative w-full border-t border-ink/10 bg-bg text-ink">
       <div className="mx-auto max-w-frame px-6 pt-12 pb-7 md:px-10 md:pt-16 md:pb-8 lg:px-12">
-        {/* Top — wordmark + info cols.
+        {/* Top: wordmark + info cols.
             Column gap is small on mobile on purpose: eleven 2rem gaps in
             a 12-column grid add up to 352px, which is wider than the
-            content box on a 320px screen — the tracks collapsed to 0 and
+            content box on a 320px screen, where the tracks collapsed to 0 and
             the whole footer (and with it every page) overflowed
             horizontally. gap-x-4 keeps the two info columns comfortably
             apart while leaving the tracks real width; the roomy gap
             returns from md up. */}
         <div className="grid grid-cols-12 gap-x-4 gap-y-8 md:gap-x-10 md:gap-y-10">
           {/* Wordmark + tagline. min-w-0 lets the column shrink inside its
-              grid track — the wordmark is a single unbreakable word, so
+              grid track, because the wordmark is a single unbreakable word, so
               its min-content width would otherwise be free to push the
               grid wider than the viewport. */}
           <div className="col-span-12 min-w-0 md:col-span-7">
@@ -81,11 +81,27 @@ export default function SiteFooter() {
               {c.footer.follow.label}
             </p>
             <div className="mt-3 flex flex-col gap-1.5 text-[13px] text-ink md:text-[14px]">
-              {c.footer.follow.links.map((name) => (
-                <a key={name} href="#" className="link-underline w-fit">
-                  {name}
-                </a>
-              ))}
+              {/* Social links carry a real destination now, so they open
+                  in a new tab. A plain string still renders inert. */}
+              {c.footer.follow.links.map((link) => {
+                const label = typeof link === "string" ? link : link.label;
+                const href = typeof link === "string" ? null : link.href;
+                return href ? (
+                  <a
+                    key={label}
+                    href={href}
+                    target="_blank"
+                    rel="noreferrer noopener"
+                    className="link-underline w-fit"
+                  >
+                    {label}
+                  </a>
+                ) : (
+                  <span key={label} className="w-fit text-ink/70">
+                    {label}
+                  </span>
+                );
+              })}
             </div>
           </div>
         </div>

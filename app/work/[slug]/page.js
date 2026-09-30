@@ -1,4 +1,4 @@
-import { PROJECT_ORDER } from "@/lib/projects";
+import projects, { PROJECT_ORDER } from "@/lib/projects";
 import Navigation from "@/components/Navigation";
 import CaseStudy from "@/components/CaseStudy";
 import { BRAND } from "@/lib/brand";
@@ -8,19 +8,21 @@ export function generateStaticParams() {
 }
 
 // Only the slugs above exist. Without this, any other slug would still
-// render (as a soft "Project not found" with a 200) — including the
+// render (as a soft "Project not found" with a 200), including the
 // placeholder projects that were removed from the archive.
 export const dynamicParams = false;
 
+// Title and description come from the project's own approved copy.
+// De-slugging the URL produced the wrong names ("Downhillitalia",
+// "Ipa Brand Lionna") and a generic invented description; the English
+// entry is the metadata source since the pages render in English until
+// the visitor switches locale client-side.
 export function generateMetadata({ params }) {
-  const slug = params.slug;
-  const title = slug
-    .split("-")
-    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-    .join(" ");
+  const project = projects.en?.[params.slug];
+  const title = project?.title ?? params.slug;
   return {
-    title: `${title} — ${BRAND.name}`,
-    description: `Case study: ${title}. Brand direction, brand experiences and visual content by ${BRAND.name}.`,
+    title: `${title} · ${BRAND.name}`,
+    description: project?.subtitle ?? `Case study: ${title}.`,
   };
 }
 

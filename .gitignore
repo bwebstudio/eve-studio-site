@@ -15,3 +15,9 @@ public/images/work/xeri-gin-focaccia-beat/barman-xeri.mp4
 # be downloadable from the live site. Only the optimised derivatives
 # (.webp / .mp4) belong in the repo.
 public/*.zip
+
+# Client copy decks and camera masters dropped into public/. Everything
+# in public/ is served as-is, so these would be downloadable from the
+# live site. The web-ready derivative (video4-aerial.mp4) is committed.
+public/*.pages
+public/video/DJI_*.mp4

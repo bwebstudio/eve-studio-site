@@ -19,14 +19,14 @@ const item = {
 };
 
 /**
- * Featured testimonial — a single, large editorial pull-quote that acts
+ * Featured testimonial: a single, large editorial pull-quote that acts
  * as a cinematic pause between the work grid and the blog.
  *
  * Art direction: deliberately asymmetric. An eyebrow rail sits on the
  * far-left column (aligned to the same left edge as Selected Work's
  * header, with a short vertical tick descending from the section rule to
  * carry the eye across the seam), while the quote is offset to the right
- * and set left-aligned — never centred. An oversized PP Editorial glyph
+ * and set left-aligned, never centred. An oversized PP Editorial glyph
  * hangs off the top-left of the quote, and the key phrase carries the
  * italic accent at a slightly larger size. A faint film-grain layer adds
  * printed-paper atmosphere. No card, stars, avatar or box.
@@ -55,7 +55,7 @@ export default function Testimonial() {
       aria-label={data.eyebrow}
       className="relative w-full overflow-hidden border-t border-ink/10 bg-bg py-16 md:py-20 lg:py-28"
     >
-      {/* Atmosphere — single ultra-subtle grain layer */}
+      {/* Atmosphere: single ultra-subtle grain layer */}
       <div aria-hidden="true" className="grain-soft pointer-events-none absolute inset-0" />
 
       <div className="relative z-10 mx-auto max-w-frame px-6 md:px-10 lg:px-12">
@@ -66,7 +66,7 @@ export default function Testimonial() {
           viewport={{ once: true, amount: 0.3 }}
           className="grid grid-cols-12 gap-y-8 md:gap-y-0"
         >
-          {/* LEFT RAIL — eyebrow + vertical connector tick */}
+          {/* LEFT RAIL: eyebrow + vertical connector tick */}
           <motion.div
             variants={item}
             className="col-span-12 md:col-span-3 md:pt-1"
@@ -83,7 +83,7 @@ export default function Testimonial() {
             </p>
           </motion.div>
 
-          {/* QUOTE — offset right, left-aligned, with a hanging glyph */}
+          {/* QUOTE: offset right, left-aligned, with a hanging glyph */}
           <motion.div
             variants={group}
             className="relative col-span-12 md:col-span-9 md:col-start-4 lg:col-span-8 lg:col-start-5"
@@ -116,19 +116,23 @@ export default function Testimonial() {
               </p>
             </motion.blockquote>
 
-            <motion.figcaption
-              variants={item}
-              className="relative z-10 mt-8 md:mt-10"
-            >
-              <span className="block text-[12px] uppercase tracking-[0.22em] text-ink">
-                {primary}
-              </span>
-              {secondary ? (
-                <span className="mt-2 block text-[11px] uppercase tracking-[0.22em] text-ink/45">
-                  {secondary}
+            {/* The credit line is dropped entirely when the quote came in
+                without an attribution: no empty rule, no invented name. */}
+            {primary ? (
+              <motion.figcaption
+                variants={item}
+                className="relative z-10 mt-8 md:mt-10"
+              >
+                <span className="block text-[12px] uppercase tracking-[0.22em] text-ink">
+                  {primary}
                 </span>
-              ) : null}
-            </motion.figcaption>
+                {secondary ? (
+                  <span className="mt-2 block text-[11px] uppercase tracking-[0.22em] text-ink/45">
+                    {secondary}
+                  </span>
+                ) : null}
+              </motion.figcaption>
+            ) : null}
           </motion.div>
         </motion.figure>
       </div>
