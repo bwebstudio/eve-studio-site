@@ -8,8 +8,14 @@ import Testimonials from "@/components/Testimonials";
 import Blog from "@/components/Blog";
 import Contact from "@/components/Contact";
 import SiteFooter from "@/components/SiteFooter";
+import { getPosts } from "@/lib/blog";
 
-export default function Home() {
+// The home teaser reads the same three latest posts as /blog.
+export const revalidate = 300;
+
+export default async function Home() {
+  const posts = await getPosts();
+
   return (
     <main className="relative bg-bg text-ink">
       <Navigation />
@@ -36,7 +42,7 @@ export default function Home() {
       {/* Large editorial pull-quote: cinematic pause after the services */}
       <Testimonial />
       {/* Blog teaser: full archive lives at /blog */}
-      <Blog limit={3} asSection />
+      <Blog limit={3} asSection posts={posts} />
       {/* Quiet testimonials set near the contact area */}
       <Testimonials />
       <Contact />

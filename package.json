@@ -9,6 +9,9 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@portabletext/react": "^3.2.4",
+    "@sanity/client": "^8.9.0",
+    "@sanity/image-url": "^2.1.1",
     "framer-motion": "^12.38.0",
     "gsap": "^3.12.5",
     "lenis": "^1.1.13",

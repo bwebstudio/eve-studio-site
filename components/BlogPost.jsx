@@ -4,8 +4,94 @@ import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { revealOnScroll } from "@/lib/animations";
+import { PortableText } from "@portabletext/react";
 import useLang from "@/lib/useLang";
+import { localize } from "@/lib/blogLocale";
 import TransitionLink from "./TransitionLink";
+
+/**
+ * How the article body renders.
+ *
+ * Kept to the type already used on this page so a published note reads as
+ * part of the site rather than as CMS output: the same measure, the same
+ * ink opacities, the editorial serif reserved for pull-quotes. Only the
+ * marks the editor is actually offered in the Studio are handled here.
+ */
+const portableComponents = {
+  block: {
+    normal: ({ children }) => (
+      <p
+        className="mt-6 text-base text-ink/80 md:text-[17px]"
+        style={{ lineHeight: 1.65 }}
+      >
+        {children}
+      </p>
+    ),
+    h2: ({ children }) => (
+      <h2
+        className="mt-12 text-2xl text-ink md:text-3xl"
+        style={{ fontWeight: 500, letterSpacing: "-0.02em" }}
+      >
+        {children}
+      </h2>
+    ),
+    h3: ({ children }) => (
+      <h3 className="mt-10 text-lg text-ink md:text-xl" style={{ fontWeight: 500 }}>
+        {children}
+      </h3>
+    ),
+    blockquote: ({ children }) => (
+      <blockquote
+        className="my-10 border-l border-ink/20 pl-6 font-editorial text-xl text-ink md:text-2xl"
+        style={{ lineHeight: 1.4 }}
+      >
+        {children}
+      </blockquote>
+    ),
+  },
+  list: {
+    bullet: ({ children }) => (
+      <ul className="mt-6 list-disc pl-5 text-base text-ink/80 md:text-[17px]">
+        {children}
+      </ul>
+    ),
+    number: ({ children }) => (
+      <ol className="mt-6 list-decimal pl-5 text-base text-ink/80 md:text-[17px]">
+        {children}
+      </ol>
+    ),
+  },
+  listItem: {
+    bullet: ({ children }) => (
+      <li className="mt-2" style={{ lineHeight: 1.65 }}>
+        {children}
+      </li>
+    ),
+    number: ({ children }) => (
+      <li className="mt-2" style={{ lineHeight: 1.65 }}>
+        {children}
+      </li>
+    ),
+  },
+  marks: {
+    strong: ({ children }) => <strong style={{ fontWeight: 600 }}>{children}</strong>,
+    em: ({ children }) => <em className="font-editorial italic">{children}</em>,
+    link: ({ value, children }) => {
+      // External links open away from the site; internal ones stay put.
+      const href = value?.href || "#";
+      const external = /^https?:\/\//i.test(href);
+      return (
+        <a
+          href={href}
+          className="link-underline text-ink"
+          {...(external ? { target: "_blank", rel: "noreferrer noopener" } : {})}
+        >
+          {children}
+        </a>
+      );
+    },
+  },
+};
 
 /**
  * Single blog post layout. The CMS isn't wired yet, body copy is
@@ -13,11 +99,14 @@ import TransitionLink from "./TransitionLink";
  * so each route paints something sensible, ready to be replaced by
  * real long-form content from a future CMS (Sanity / Hygraph / MD).
  */
-export default function BlogPost({ slug }) {
-  const { t } = useLang();
+export default function BlogPost({ slug, doc }) {
+  const { t, lang } = useLang();
   const rootRef = useRef(null);
   const b = t.blog;
-  const post = b.posts.find((p) => p.slug === slug);
+  // Sanity first, then the note still held in lib/content.js. A post that
+  // has not been migrated yet keeps rendering exactly as before.
+  const post =
+    localize(doc, lang) || b.posts.find((p) => p.slug === slug) || null;
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -109,25 +198,14 @@ export default function BlogPost({ slug }) {
             >
               {post.excerpt}
             </p>
-            <p
-              data-reveal
-              className="mt-8 text-base text-ink/80 md:text-[17px]"
-              style={{ lineHeight: 1.65 }}
-            >
-              This note is a placeholder. The CMS isn’t wired yet. The
-              final body of the article will live here once MAIT Studio publishes
-              it. Layout, type and rhythm are locked in.
-            </p>
-            <p
-              data-reveal
-              className="mt-6 text-base text-ink/80 md:text-[17px]"
-              style={{ lineHeight: 1.65 }}
-            >
-              Each weekly entry follows the same shape: an opening line, a
-              short context paragraph, and a single editorial idea worth
-              keeping. Notes are read in under five minutes and meant to be
-              shared inside the studio first.
-            </p>
+            {/* The article itself, written in the Studio. A note with no
+                body yet simply shows its standfirst above and nothing
+                here, rather than the apology this used to print. */}
+            {post.body?.length ? (
+              <div data-reveal className="mt-8">
+                <PortableText value={post.body} components={portableComponents} />
+              </div>
+            ) : null}
 
             {/* Bottom row */}
             <div className="mt-12 flex items-center justify-between border-t border-ink/10 pt-6 text-[11px] uppercase tracking-[0.22em] text-ink/60 md:mt-16">

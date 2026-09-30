@@ -6,6 +6,7 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { revealOnScroll } from "@/lib/animations";
 import useLang from "@/lib/useLang";
+import { localize } from "@/lib/blogLocale";
 import TransitionLink from "./TransitionLink";
 
 const EASE = [0.22, 1, 0.36, 1];
@@ -16,8 +17,8 @@ const EASE = [0.22, 1, 0.36, 1];
  * a post card we route to /blog/[slug]: the page is created with a
  * fallback layout in case the post hasn't been written yet.
  */
-export default function Blog({ limit, asSection = false }) {
-  const { t } = useLang();
+export default function Blog({ limit, asSection = false, posts: docs }) {
+  const { t, lang } = useLang();
   const rootRef = useRef(null);
   const headingRef = useRef(null);
   const headingInView = useInView(headingRef, {
@@ -27,7 +28,12 @@ export default function Blog({ limit, asSection = false }) {
   });
 
   const b = t.blog;
-  const posts = limit ? b.posts.slice(0, limit) : b.posts;
+  // Sanity is the source of truth once it has posts. Until then, and if a
+  // read ever fails, the notes in lib/content.js keep the section alive.
+  const source = docs?.length
+    ? docs.map((doc) => localize(doc, lang)).filter(Boolean)
+    : b.posts;
+  const posts = limit ? source.slice(0, limit) : source;
 
   useEffect(() => {
     if (typeof window === "undefined") return;
