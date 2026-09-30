@@ -10,9 +10,9 @@ import { BRAND } from "@/lib/brand";
  * returns success so the UI flow can be exercised end-to-end.
  *
  * Required env (production):
- *   - RESEND_API_KEY   — Resend account key
- *   - CONTACT_FROM     — verified sender, e.g. "MAIT Studio <hello@maitstudio.com>"
- *   - CONTACT_TO       — destination, e.g. "hello@maitstudio.com"
+ *   - RESEND_API_KEY  : Resend account key
+ *   - CONTACT_FROM    : verified sender, e.g. "MAIT Studio <hello@maitstudio.com>"
+ *   - CONTACT_TO      : destination, e.g. "hello@maitstudio.com"
  *
  * Body shape:
  *   { name, company?, email, phone?, service?, budget?, message, consent, lang? }
@@ -57,7 +57,7 @@ export async function POST(request) {
     process.env.CONTACT_FROM || `${BRAND.name} <${BRAND.email}>`;
   const to = process.env.CONTACT_TO || BRAND.email;
 
-  const subject = `New enquiry — ${name}${company ? ` (${company})` : ""}`;
+  const subject = `New enquiry: ${name}${company ? ` (${company})` : ""}`;
 
   const lines = [
     `Name:    ${name}`,
@@ -74,7 +74,7 @@ export async function POST(request) {
     .filter(Boolean)
     .join("\n");
 
-  // Local / preview mode — no Resend configured. Log and return 200
+  // Local / preview mode: no Resend configured. Log and return 200
   // so the form flow can be exercised without an account.
   if (!apiKey) {
     console.log("[contact:test-mode]", { name, company, email, phone, service, budget, lang });

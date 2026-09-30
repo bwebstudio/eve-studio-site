@@ -11,11 +11,11 @@ const item = {
 };
 
 /**
- * Quiet editorial testimonials set — a second, smaller moment placed
+ * Quiet editorial testimonials set: a second, smaller moment placed
  * near the contact area. Mirrors the About 2-col rhythm: eyebrow + lede
  * on the left, a hairline-separated stack of short quotes on the right.
  * Each quote uses the editorial serif with an index marker and a small
- * brand + descriptor line — no cards, ratings, avatars or sliders.
+ * brand + descriptor line: no cards, ratings, avatars or sliders.
  *
  * Reveal uses Framer Motion's whileInView (self-contained) instead of the
  * global GSAP data-reveal so it can never get stuck invisible.
@@ -39,7 +39,7 @@ export default function Testimonials() {
     <section className="relative w-full border-t border-ink/10 bg-bg pt-12 pb-14 md:pt-16 md:pb-20 lg:pt-20 lg:pb-24">
       <div className="mx-auto max-w-frame px-6 md:px-10 lg:px-12">
         <div className="grid grid-cols-12 gap-6 md:gap-10 lg:gap-14">
-          {/* LEFT — eyebrow + lede */}
+          {/* LEFT: eyebrow + lede */}
           <div className="col-span-12 md:col-span-4">
             <motion.p
               {...reveal(0)}
@@ -57,7 +57,7 @@ export default function Testimonials() {
             </motion.p>
           </div>
 
-          {/* RIGHT — hairline-separated quotes */}
+          {/* RIGHT: hairline-separated quotes */}
           <ul className="col-span-12 md:col-span-7 md:col-start-6">
             {data.list.map((entry, i) => (
               <motion.li

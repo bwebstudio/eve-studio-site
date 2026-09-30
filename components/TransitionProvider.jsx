@@ -26,7 +26,7 @@ const TransitionContext = createContext({
  *   1. User clicks a TransitionLink → navigate(href).
  *   2. Phase goes "idle" → "cover" → two halves slide to cover the viewport.
  *   3. After CURTAIN_MS, router.push(href) fires. The target pathname is
- *      stored in a ref — we do NOT immediately uncover.
+ *      stored in a ref: we do NOT immediately uncover.
  *   4. A pathname-watching effect waits for Next.js to actually render the
  *      new page. Once pathname matches the target, we give React a tick to
  *      paint, THEN flip to "uncover". Prevents the brief flash of the old

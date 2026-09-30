@@ -5,14 +5,14 @@ import { gsap } from "gsap";
 import useAppReady from "@/lib/useAppReady";
 import { BRAND } from "@/lib/brand";
 
-// Editorial preloader — black stage with discreet film grain, crop
+// Editorial preloader: black stage with discreet film grain, crop
 // marks at the four corners, meta rails at top and bottom, and a
 // centred wordmark that reveals as outline-then-fill, capped with an
 // italic tagline. Closes with a horizontal split curtain: the black
 // parts along the wordmark's own axis, top panel rises and bottom
 // panel falls, revealing the home from the middle outward.
 
-// Counter tween — kept short so the preloader feels immediate.
+// Counter tween: kept short so the preloader feels immediate.
 // Original was 2.5s, which read as slow for repeat visitors.
 const COUNT_DURATION = 1.0;
 
@@ -43,7 +43,7 @@ export default function Preloader() {
   const bottomPanelRef = useRef(null);
   const seamRef = useRef(null);
 
-  // Session gate — same policy as before.
+  // Session gate: same policy as before.
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const forceShow = params.has("preload");
@@ -80,7 +80,7 @@ export default function Preloader() {
     if (shouldRun !== true) return;
 
     // Initial states are inlined on each element's `style` (see the
-    // JSX below) so the first paint is already hidden — no flash of
+    // JSX below) so the first paint is already hidden, no flash of
     // unstyled content before this effect runs. We only need to
     // confirm transformOrigin here for the progress bar.
     gsap.set(progressBarRef.current, { transformOrigin: "0 50%" });
@@ -89,11 +89,11 @@ export default function Preloader() {
       onComplete: () => setRemoved(true),
     });
 
-    // Preloader timing — rewritten to be faster and more efficient.
+    // Preloader timing: rewritten to be faster and more efficient.
     // Target total runtime ~2.4s (was ~6s). Atmosphere, mark, counter
     // and split now overlap aggressively instead of running in series.
 
-    // 1. Atmosphere — grain + crop marks snap in together at t=0.
+    // 1. Atmosphere: grain + crop marks snap in together at t=0.
     tl.to(
       grainRef.current,
       { opacity: 0.08, duration: 0.55, ease: "power2.out" },
@@ -111,7 +111,7 @@ export default function Preloader() {
       0.05
     );
 
-    // 2. Rails — fast fade with a short stagger.
+    // 2. Rails: fast fade with a short stagger.
     tl.to(
       topMetaRef.current,
       { opacity: 0.72, y: 0, duration: 0.5, ease: "power3.out" },
@@ -123,7 +123,7 @@ export default function Preloader() {
       0.15
     );
 
-    // 3. Wordmark outline — center-out reveal, brisker.
+    // 3. Wordmark outline: center-out reveal, brisker.
     tl.to(
       wordmarkOutlineRef.current,
       {
@@ -135,7 +135,7 @@ export default function Preloader() {
       0.2
     );
 
-    // 4. Counter + hairline — run alongside the outline draw.
+    // 4. Counter + hairline: run alongside the outline draw.
     const counterObj = { v: 0 };
     tl.to(
       counterObj,
@@ -157,7 +157,7 @@ export default function Preloader() {
       0.2
     );
 
-    // 5. Fill crossfades over the outline — mark solidifies.
+    // 5. Fill crossfades over the outline: mark solidifies.
     tl.to(
       wordmarkFillRef.current,
       { opacity: 1, duration: 0.4, ease: "power3.inOut" },
@@ -225,7 +225,7 @@ export default function Preloader() {
       "<"
     );
 
-    // 12. Horizontal split — quicker, still cinematic.
+    // 12. Horizontal split: quicker, still cinematic.
     tl.to(
       topPanelRef.current,
       { y: "-100%", duration: 0.75, ease: "expo.inOut" },
@@ -307,7 +307,7 @@ export default function Preloader() {
         }}
       />
 
-      {/* Seam hairline — draws along the split axis just before the
+      {/* Seam hairline: draws along the split axis just before the
           panels part, like an editorial rule marking the tear line. */}
       <div
         ref={seamRef}
@@ -325,7 +325,7 @@ export default function Preloader() {
         }}
       />
 
-      {/* Film grain overlay — fractal noise, overlay blend. */}
+      {/* Film grain overlay: fractal noise, overlay blend. */}
       <div
         ref={grainRef}
         style={{
@@ -340,7 +340,7 @@ export default function Preloader() {
         }}
       />
 
-      {/* Corner crop marks — tiny editorial signatures. */}
+      {/* Corner crop marks: tiny editorial signatures. */}
       {CROP_POSITIONS.map((pos, i) => (
         <div
           key={i}
@@ -364,7 +364,7 @@ export default function Preloader() {
         </div>
       ))}
 
-      {/* Frame content — meta rails + wordmark + tagline. */}
+      {/* Frame content: meta rails + wordmark + tagline. */}
       <div
         style={{
           position: "absolute",
@@ -388,7 +388,7 @@ export default function Preloader() {
             transform: "translateY(14px)",
           }}
         >
-          <span>{BRAND.name} — Creative Studio</span>
+          <span>{BRAND.name} · Creative Studio</span>
           <span>Madrid · 2026</span>
         </div>
 
@@ -434,7 +434,7 @@ export default function Preloader() {
             </span>
           </div>
 
-          {/* Tagline — kept editorial italic as accent over General Sans. */}
+          {/* Tagline: kept editorial italic as accent over General Sans. */}
           <div
             ref={subtitleRef}
             style={{

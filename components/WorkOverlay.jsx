@@ -9,7 +9,7 @@ import TransitionLink from "./TransitionLink";
 const EASE = [0.22, 1, 0.36, 1];
 
 /**
- * Elegant Work overlay — opens when the user clicks "Work" in the nav
+ * Elegant Work overlay: opens when the user clicks "Work" in the nav
  * or "Choose a category" in the home Work section. Lists the three
  * disciplines (Events / Social Media / Photo & Video) and routes the
  * user to the relevant /work/[category] page.
@@ -158,7 +158,7 @@ export default function WorkOverlay({ isOpen, onClose }) {
               </button>
             </div>
 
-            {/* Categories — three rows of premium link cards. */}
+            {/* Categories: three rows of premium link cards. */}
             <ul className="flex flex-col">
               {categories.map((cat, i) => (
                 <li

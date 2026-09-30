@@ -9,12 +9,12 @@ import useLang from "@/lib/useLang";
 import { PROJECT_IMAGES } from "@/lib/projects";
 
 /**
- * Project card — simplified. The previous version translated each
+ * Project card: simplified. The previous version translated each
  * card up from `window.innerHeight` below its layout position and
  * applied a scroll-linked image scale. Both effects could overlap
  * visually when the user scrolled back up past a card (especially
  * with browser back-forward cache), so we replaced them with a
- * single opacity+small-y reveal via [data-reveal] — no scroll-linked
+ * single opacity+small-y reveal via [data-reveal], no scroll-linked
  * transforms, no per-card scroll listeners.
  */
 function ProjectCard({ p, layout }) {
@@ -58,7 +58,7 @@ function ProjectCard({ p, layout }) {
   );
 }
 
-// Compact 2x2 grid — the full archive lives behind the Work overlay
+// Compact 2x2 grid: the full archive lives behind the Work overlay
 // and the per-category routes, so the home only shows a tight proof
 // of recent work rather than the full archive.
 const GRID = [
@@ -90,7 +90,7 @@ export default function SelectedWork({ onOpenOverlay }) {
       className="relative w-full overflow-hidden border-t border-ink/10 bg-bg pt-12 pb-14 md:pt-16 md:pb-20 lg:pt-20 lg:pb-24"
     >
       <div className="mx-auto max-w-frame px-6 md:px-10 lg:px-12">
-        {/* Header row — Kaiora pattern: eyebrow left + CTA right */}
+        {/* Header row: Kaiora pattern: eyebrow left + CTA right */}
         <div data-reveal className="flex items-baseline justify-between gap-6">
           <p
             className="text-[11px] uppercase tracking-[0.24em] text-ink"

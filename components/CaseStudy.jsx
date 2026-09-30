@@ -23,7 +23,7 @@ const EASE = [0.22, 1, 0.36, 1];
  * site on phones), desktop keeps the per-item aspect.
  *
  * Each md:* class must appear as a literal string here so Tailwind's
- * content scanner picks it up — dynamic interpolation like
+ * content scanner picks it up: dynamic interpolation like
  * `md:${aspect}` does NOT generate the class. Add new entries to this
  * map when projects.js introduces a new aspect value.
  */
@@ -54,7 +54,7 @@ function findCategoryKey(slug) {
  * A single content section (text + optional image OR video) styled to
  * match the rest of the case study. Each section gallery item can be
  * either a plain string (image URL) or an object describing a richer
- * media — currently { type: "video", src, poster, alt, aspect, grade }.
+ * media: currently { type: "video", src, poster, alt, aspect, grade }.
  * The grade prop maps to a CSS class ("warm-duotone") so individual
  * media can carry the project's chromatic signature without bleeding
  * the treatment into every other case study.
@@ -138,13 +138,13 @@ function ProjectSection({ index, section, media, projectTitle }) {
                 loop
                 playsInline
                 preload="auto"
-                aria-label={mediaItem.alt || `${projectTitle} — ${section.label}`}
+                aria-label={mediaItem.alt || `${projectTitle}: ${section.label}`}
                 className={`absolute inset-0 h-full w-full object-cover ${gradeMediaClass}`}
               />
             ) : (
               <img
                 src={mediaItem.src}
-                alt={mediaItem.alt || `${projectTitle} — ${section.label}`}
+                alt={mediaItem.alt || `${projectTitle}: ${section.label}`}
                 loading="lazy"
                 decoding="async"
                 draggable="false"
@@ -221,7 +221,7 @@ export default function CaseStudy({ slug }) {
       className="relative w-full bg-bg pt-[120px] md:pt-[152px] lg:pt-[176px]"
     >
       <div className="mx-auto max-w-frame px-6 pb-[80px] md:px-10 md:pb-[112px] lg:px-12 lg:pb-[128px]">
-        {/* Eyebrow + back link — same pattern as WorkCategoryPage */}
+        {/* Eyebrow + back link: same pattern as WorkCategoryPage */}
         <div className="flex items-baseline justify-between text-[11px] uppercase tracking-[0.22em] text-ink/60">
           <span className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
             {eyebrow}
@@ -296,7 +296,7 @@ export default function CaseStudy({ slug }) {
           />
         </motion.div>
 
-        {/* Meta strip — Client / Location / Year / Services */}
+        {/* Meta strip: Client / Location / Year / Services */}
         <div className="mt-12 grid grid-cols-12 gap-6 border-t border-ink/10 pt-8 text-[11px] uppercase tracking-[0.22em] text-ink/60 md:mt-16 md:gap-8 md:pt-10">
           <div data-reveal className="col-span-6 md:col-span-3">
             <p className="text-ink/40">{clientLabel}</p>
@@ -335,7 +335,7 @@ export default function CaseStudy({ slug }) {
           </p>
         </div>
 
-        {/* Content sections — each section's gallery item can be an
+        {/* Content sections: each section's gallery item can be an
             image URL string or a richer media object (e.g. video). */}
         {project.sections.map((section, i) => {
           const media = images?.gallery?.[i];
@@ -350,7 +350,7 @@ export default function CaseStudy({ slug }) {
           );
         })}
 
-        {/* Extra editorial gallery — only rendered when the project
+        {/* Extra editorial gallery: only rendered when the project
             defines additional images beyond the section ones. Each
             item declares its own col-span and aspect, so projects like
             Backyard dello Specchio can breathe with asymmetric pairs
@@ -386,13 +386,13 @@ export default function CaseStudy({ slug }) {
                       loop
                       playsInline
                       preload="metadata"
-                      aria-label={item.alt || `${project.title} — ${i + 1}`}
+                      aria-label={item.alt || `${project.title}: ${i + 1}`}
                       className="absolute inset-0 h-full w-full object-cover"
                     />
                   ) : (
                     <img
                       src={item.src}
-                      alt={item.alt || `${project.title} — ${i + 1}`}
+                      alt={item.alt || `${project.title}: ${i + 1}`}
                       loading="lazy"
                       decoding="async"
                       draggable="false"
@@ -423,7 +423,7 @@ export default function CaseStudy({ slug }) {
           </ul>
         </div>
 
-        {/* Press credit — optional, only if the project was picked up
+        {/* Press credit: optional, only if the project was picked up
             by an external publication. Quiet editorial line, no logo,
             no marketing language. */}
         {project.press?.url && (
@@ -447,7 +447,7 @@ export default function CaseStudy({ slug }) {
           </div>
         )}
 
-        {/* Next project — compact, light, matches the rest */}
+        {/* Next project: compact, light, matches the rest */}
         {nextProject && (
           <div className="mt-16 border-t border-ink/10 pt-10 md:mt-24 md:pt-12">
             <div className="flex items-baseline justify-between gap-6">
@@ -489,7 +489,7 @@ export default function CaseStudy({ slug }) {
               </span>
             </TransitionLink>
             <p className="mt-3 text-[11px] uppercase tracking-[0.22em] text-ink/55">
-              {nextProject.discipline} — {nextProject.year}
+              {nextProject.discipline} · {nextProject.year}
             </p>
           </div>
         )}

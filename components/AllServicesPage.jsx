@@ -12,7 +12,7 @@ import TransitionLink from "./TransitionLink";
 const EASE = [0.22, 1, 0.36, 1];
 
 /**
- * Dedicated /services page — a deeper, less compressed companion to
+ * Dedicated /services page: a deeper, less compressed companion to
  * the home Services strip. Each discipline gets a full editorial
  * block: large image, name, tagline, full bullet list, longer note,
  * and a clear path into the matching /work/[category] route.
@@ -22,13 +22,13 @@ const EASE = [0.22, 1, 0.36, 1];
  * one coherent system.
  */
 /**
- * Page lede — only used by this route, so it lives beside it rather than
+ * Page lede: only used by this route, so it lives beside it rather than
  * bloating content.js. Add a locale key when a new language is added.
  */
 const SERVICES_LEDE = {
-  en: "Three disciplines, one studio. Each is treated as a complete system — strategy, direction and execution under one editorial eye.",
-  es: "Tres disciplinas, un estudio. Cada una se trabaja como un sistema completo — estrategia, dirección y ejecución bajo una misma mirada editorial.",
-  it: "Tre discipline, un solo studio. Ognuna è trattata come un sistema completo — strategia, direzione ed esecuzione sotto un unico sguardo editoriale.",
+  en: "Three disciplines, one studio. Each is treated as a complete system: strategy, direction and execution under one editorial eye.",
+  es: "Tres disciplinas, un estudio. Cada una se trabaja como un sistema completo: estrategia, dirección y ejecución bajo una misma mirada editorial.",
+  it: "Tre discipline, un solo studio. Ognuna è trattata come un sistema completo: strategia, direzione ed esecuzione sotto un unico sguardo editoriale.",
 };
 
 export default function AllServicesPage() {
@@ -110,7 +110,7 @@ export default function AllServicesPage() {
           </div>
         </div>
 
-        {/* Three service blocks — full editorial */}
+        {/* Three service blocks: full editorial */}
         <div className="mt-16 flex flex-col md:mt-20">
           {t.services.items.map((s, i) => {
             const href = serviceHref(s.key);

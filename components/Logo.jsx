@@ -19,12 +19,12 @@ const EASE = [0.22, 1, 0.36, 1];
  *  - settled : micro-settle, tracking closes, scale normalises
  *  - compact : scroll-triggered header state, quietly condensed
  *
- * Amplitudes are deliberately small — this is identity, not a headline.
+ * Amplitudes are deliberately small: this is identity, not a headline.
  * Typographic fallback wordmark (used until the supplied logo asset is
  * wired up in lib/brand.js): the studio name set in General Sans 500,
  * the "." as ordinary punctuation in the same face. Same treatment in
  * the footer and the preloader, so the brand reads as one mark across
- * the site. This is the name set in the site's own type — not a
+ * the site. This is the name set in the site's own type, not a
  * reconstruction of the logo.
  */
 const wordVariants = {
@@ -64,7 +64,7 @@ const wordVariants = {
 
 /**
  * Letters only carry a micro y-offset during intro. No opacity animation at
- * the letter level — the container fade owns the reveal so the eye reads
+ * the letter level: the container fade owns the reveal so the eye reads
  * "the word appears" instead of "letters appear".
  */
 const letterVariants = {
@@ -80,7 +80,7 @@ const SETTLE_HOLD_MS = 220;
 export default function Logo({
   text = BRAND.wordmark,
   href = "/",
-  ariaLabel = `${BRAND.name} — Home`,
+  ariaLabel = `${BRAND.name} · Home`,
   className = "",
   /** Reacts to window scroll, swapping settled ↔ compact. */
   compactOnScroll = true,
@@ -88,7 +88,7 @@ export default function Logo({
   immediate = false,
   /** Delay before intro fires, lets the hero start breathing first. */
   introDelay = 0.05,
-  /** Rendered on a dark surface — swaps to the white logo variant. */
+  /** Rendered on a dark surface: swaps to the white logo variant. */
   onDark = false,
   onClick,
 }) {
@@ -124,7 +124,7 @@ export default function Logo({
     };
   }, [shouldSkipIntro, compactOnScroll, introDelay, ready]);
 
-  // Scroll listener — single source of truth, independent of Navigation's.
+  // Scroll listener: single source of truth, independent of Navigation's.
   useEffect(() => {
     if (!compactOnScroll) return;
     const onScroll = () => setScrolled(window.scrollY > 40);
@@ -134,7 +134,7 @@ export default function Logo({
   }, [compactOnScroll]);
 
   // Once past intro, reconcile phase with scroll. During intro the scroll
-  // state is held — the intro always completes so the brand feels deliberate,
+  // state is held: the intro always completes so the brand feels deliberate,
   // but if the user has already scrolled we never entered intro anyway.
   useEffect(() => {
     if (!compactOnScroll) return;

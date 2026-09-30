@@ -56,19 +56,19 @@
   --font-editorial: "Editorial New";
   --font-neue: "Neue Montreal";
   --font-sans: "General Sans";
-  /* Ground colour — single source of truth for the whole site (Tailwind's
+  /* Ground colour: single source of truth for the whole site (Tailwind's
      `bg` token mirrors this value in tailwind.config.js).
      Warm off-white / soft bone: extremely light and neutral, but kept a
      few degrees warm so the editorial "printed paper" feel survives.
      Replaces the previous cream (#EFEAE0), which read too beige.
-     NOT a clinical cold white — hue stays on the warm side of neutral. */
+     NOT a clinical cold white: hue stays on the warm side of neutral. */
   --color-bg: #faf8f5;
-  /* One quiet step darker, same warm family — used by the clients band. */
+  /* One quiet step darker, same warm family: used by the clients band. */
   --color-bg-mute: #f1ede7;
   --color-ink: #111111;
   --color-secondary: #b3aca4;
   --color-accent: #efe9e1;
-  /* Sticky-header offset for hash links — matches NAV_OFFSET in
+  /* Sticky-header offset for hash links: matches NAV_OFFSET in
      SmoothScroll.jsx so when the JS path bails (e.g. external page
      load, no-JS) the native scroll-to-hash still lands in the same
      place. NO scroll-margin-top is set on sections; those used to
@@ -103,7 +103,7 @@ h6 {
   letter-spacing: -0.02em;
 }
 
-/* Editorial italic accent — used inline as a flourish on key words
+/* Editorial italic accent: used inline as a flourish on key words
    inside otherwise-sans headlines. The base typography is General
    Sans; this helper keeps the editorial serif available where it
    genuinely adds value (italicised emphasis words). */
@@ -152,7 +152,7 @@ html.lenis body {
   text-wrap: balance;
 }
 
-/* Soft film grain — ultra-subtle atmospheric texture for editorial
+/* Soft film grain: ultra-subtle atmospheric texture for editorial
    sections. Static (no animation), pointer-events:none on the element.
    Multiplies faint dark specks into the cream ground so a text-only
    section reads as printed paper rather than flat digital fill. */
@@ -166,11 +166,11 @@ html.lenis body {
 /*
  * Reveal entry states.
  *
- * Headlines animate as a single block — never split into lines or words.
+ * Headlines animate as a single block: never split into lines or words.
  * The only job of CSS here is to set the pre-animation state so the
  * element doesn't flash in before GSAP hydrates.
  *
- * Typography is NEVER clipped — no overflow:hidden masks on headlines.
+ * Typography is NEVER clipped: no overflow:hidden masks on headlines.
  */
 [data-reveal] {
   opacity: 0;
@@ -206,7 +206,7 @@ html.lenis body {
   transform: scaleX(1);
 }
 
-/* Card tilt correction — used by individual project cards when the
+/* Card tilt correction: used by individual project cards when the
  * source frame is slightly skewed and the grid crop reveals the lean.
  * Combines the static rotation with the same gentle hover scale the
  * rest of the cards use, so the interaction stays consistent. */
@@ -223,7 +223,7 @@ html.lenis body {
   }
 }
 
-/* Grayscale media hover — transition ONLY on filter.
+/* Grayscale media hover: transition ONLY on filter.
  * transform is owned by framer-motion on animated images; a CSS transition
  * on transform here would fight the JS animation frame-by-frame and cancel
  * out translate motion. */
@@ -235,12 +235,12 @@ html.lenis body {
   filter: grayscale(0);
 }
 
-/* Warm editorial duotone — used for the bartender loop on the Xerí Gin
+/* Warm editorial duotone: used for the bartender loop on the Xerí Gin
  * page. Default state: high-contrast grayscale tinted toward amber/ruby
  * so the moving image carries the project's chromatic signature even
  * when it isn't hovered. On hover, the grade releases back to natural
  * footage. The container also holds a warm gradient overlay
- * (.media-warm-duotone__tint) that uses mix-blend-multiply for depth —
+ * (.media-warm-duotone__tint) that uses mix-blend-multiply for depth,
  * the overlay fades out alongside the filter on hover. */
 .media-warm-duotone {
   filter:
@@ -282,7 +282,7 @@ html.lenis body {
   }
 }
 
-/* Red editorial duotone — used for the interior loop on the IPA Brand
+/* Red editorial duotone: used for the interior loop on the IPA Brand
  * at Li-Onna page. Mirrors the warm-duotone pattern but anchored on the
  * project's chromatic signature (deep red lacquered walls, velvet,
  * roses). Default state pushes the footage to a grayscale base tinted
@@ -330,10 +330,10 @@ html.lenis body {
   }
 }
 
-/* Marquee — 3 copies of identical content. Spacing lives on each copy
+/* Marquee: 3 copies of identical content. Spacing lives on each copy
    as padding-right (not gap), so every copy is structurally the same
    width. Translating by -33.3333% (one full copy) lands copy 2 exactly
-   where copy 1 started — seamless loop, no jump. */
+   where copy 1 started: seamless loop, no jump. */
 .marquee {
   display: flex;
   width: max-content;
@@ -372,7 +372,7 @@ html.lenis body {
  * Custom editorial cursor
  * Two layers (thin ring + small dot) with state-based sizing,
  * magnetic pull via JS, mix-blend-mode: difference for auto-contrast.
- * Desktop only — gated by `body.cursor-active` which is applied by
+ * Desktop only: gated by `body.cursor-active` which is applied by
  * the Cursor component after a (hover: hover) check.
  * ------------------------------------------------------------------ */
 
@@ -489,7 +489,7 @@ body.cursor-active * {
 }
 
 /* 160ms glitch reaction fired by Hero's video transition event.
- * Animates box-shadow only — transform is owned by GSAP (position) so
+ * Animates box-shadow only: transform is owned by GSAP (position) so
  * we never fight the quickTo tween. */
 .cursor-root.is-glitch .cursor-ring {
   animation: cursor-ring-glitch 160ms steps(3, end) 1;
@@ -544,7 +544,7 @@ body.cursor-active * {
 }
 
 /* ------------------------------------------------------------------
- * Hero cinematic glitch — used only by the Hero component.
+ * Hero cinematic glitch: used only by the Hero component.
  * Scoped with `hero-` prefix so it cannot bleed into other sections.
  * ------------------------------------------------------------------ */
 
@@ -617,7 +617,7 @@ body.cursor-active * {
   }
 }
 
-/* Horizontal band streaks — only present during the 320ms glitch. */
+/* Horizontal band streaks: only present during the 320ms glitch. */
 .hero-band {
   position: absolute;
   left: 0;
@@ -664,7 +664,7 @@ body.cursor-active * {
   70% { transform: translateX(-30px); opacity: 0.6; }
 }
 
-/* Procedural SVG grain — always visible, boosted during glitch. */
+/* Procedural SVG grain: always visible, boosted during glitch. */
 .hero-grain {
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0   0 0 0 0 0   0 0 0 0 0   0 0 0 1.1 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='0.55'/></svg>");
   background-size: 240px 240px;
@@ -676,7 +676,7 @@ body.cursor-active * {
   opacity: 0.35;
 }
 
-/* Scanlines — stronger during glitch, invisible otherwise. */
+/* Scanlines: stronger during glitch, invisible otherwise. */
 .hero-scanlines {
   background-image: repeating-linear-gradient(
     0deg,

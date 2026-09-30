@@ -11,9 +11,9 @@ import TransitionLink from "./TransitionLink";
 const EASE = [0.22, 1, 0.36, 1];
 
 /**
- * Blog index — used both as the home teaser (with `limit`) and the
+ * Blog index: used both as the home teaser (with `limit`) and the
  * standalone /blog page (no limit, full grid). When the user clicks
- * a post card we route to /blog/[slug] — the page is created with a
+ * a post card we route to /blog/[slug]: the page is created with a
  * fallback layout in case the post hasn't been written yet.
  */
 export default function Blog({ limit, asSection = false }) {
@@ -51,7 +51,7 @@ export default function Blog({ limit, asSection = false }) {
     <Wrapper ref={rootRef} {...wrapperProps}>
       <div className="mx-auto max-w-frame px-6 md:px-10 lg:px-12">
         {asSection ? (
-          // Home teaser — Kaiora compact pattern (eyebrow row + cards)
+          // Home teaser: Kaiora compact pattern (eyebrow row + cards)
           <div data-reveal className="flex items-baseline justify-between gap-6">
             <p
               className="text-[11px] uppercase tracking-[0.24em] text-ink"
@@ -74,7 +74,7 @@ export default function Blog({ limit, asSection = false }) {
             </TransitionLink>
           </div>
         ) : (
-          // /blog page — keep the bigger editorial header
+          // /blog page: keep the bigger editorial header
           <>
             <div className="flex items-baseline justify-between text-[11px] uppercase tracking-[0.22em] text-ink/60">
               <span>{b.sectionLabel}</span>

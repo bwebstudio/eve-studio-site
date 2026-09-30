@@ -5,8 +5,8 @@ import { PROJECTS_BY_CATEGORY } from "@/lib/projects";
 import { BRAND } from "@/lib/brand";
 
 export const metadata = {
-  title: `Events — ${BRAND.name}`,
-  description: `Brand activations, launches, nightlife and cultural moments — produced and directed by ${BRAND.name}.`,
+  title: `Events · ${BRAND.name}`,
+  description: `Brand activations, launches, nightlife and cultural moments, produced and directed by ${BRAND.name}.`,
 };
 
 export default function EventsPage() {

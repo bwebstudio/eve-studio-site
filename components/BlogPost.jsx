@@ -8,7 +8,7 @@ import useLang from "@/lib/useLang";
 import TransitionLink from "./TransitionLink";
 
 /**
- * Single blog post layout. The CMS isn't wired yet — body copy is
+ * Single blog post layout. The CMS isn't wired yet, body copy is
  * scaffolded with two editorial paragraphs derived from the excerpt
  * so each route paints something sensible, ready to be replaced by
  * real long-form content from a future CMS (Sanity / Hygraph / MD).
@@ -98,7 +98,7 @@ export default function BlogPost({ slug }) {
           />
         </div>
 
-        {/* Body — placeholder editorial scaffold. Replace with CMS
+        {/* Body: placeholder editorial scaffold. Replace with CMS
             content when the source of truth is ready. */}
         <div className="mt-12 grid grid-cols-12 gap-6 md:mt-16 md:gap-8">
           <div className="col-span-12 md:col-span-8 md:col-start-3">
@@ -114,7 +114,7 @@ export default function BlogPost({ slug }) {
               className="mt-8 text-base text-ink/80 md:text-[17px]"
               style={{ lineHeight: 1.65 }}
             >
-              This note is a placeholder. The CMS isn’t wired yet — the
+              This note is a placeholder. The CMS isn’t wired yet. The
               final body of the article will live here once MAIT Studio publishes
               it. Layout, type and rhythm are locked in.
             </p>

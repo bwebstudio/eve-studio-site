@@ -4,7 +4,7 @@ import projects from "@/lib/projects";
 import TransitionLink from "./TransitionLink";
 
 /**
- * One project card in a work grid — used by the /work index and by the
+ * One project card in a work grid: used by the /work index and by the
  * per-category archives, so the two stay identical.
  *
  * A card only becomes a link when a case study actually exists for its

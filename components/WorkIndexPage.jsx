@@ -13,7 +13,7 @@ import WorkCard from "./WorkCard";
 const EASE = [0.22, 1, 0.36, 1];
 
 /**
- * /work — the portfolio index.
+ * /work: the portfolio index.
  *
  * "Work" was taken out of the main menu and "Selected work" out of the
  * home, which left the archives reachable only by guessing that a
@@ -25,8 +25,8 @@ const EASE = [0.22, 1, 0.36, 1];
  * splitting it would read as emptier than it is. The per-category
  * archives (/work/events, /work/photo-video) stay exactly as they were.
  *
- * Copy comes from the existing `work` block in content.js — no new
- * strings — and the chrome mirrors WorkCategoryPage so the route feels
+ * Copy comes from the existing `work` block in content.js, no new
+ * strings: and the chrome mirrors WorkCategoryPage so the route feels
  * part of the same system.
  */
 export default function WorkIndexPage() {
@@ -92,8 +92,8 @@ export default function WorkIndexPage() {
 
         {/* No intro paragraph: the existing `work.lede` ends in "choose a
             category to enter the relevant work", which describes the old
-            category chooser, not this grid. Rather than write new copy —
-            that sits with the client's copywriter — the row carries the
+            category chooser, not this grid. Rather than write new copy
+            (that sits with the client's copywriter), the row carries the
             CTA alone until an intro for this page is approved. */}
         <div className="mt-6 grid grid-cols-12 gap-6 md:mt-8 md:gap-8">
           <div className="col-span-12 mt-4 flex md:col-span-12 md:mt-0 md:justify-end">

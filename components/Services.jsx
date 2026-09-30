@@ -9,12 +9,12 @@ import { serviceHref } from "@/lib/serviceRoutes";
 import TransitionLink from "./TransitionLink";
 
 /**
- * "WHAT WE DO" — Kaiora-style services strip.
+ * "WHAT WE DO": Kaiora-style services strip.
  *
  * Section header is a single row: eyebrow on the left + "VIEW ALL
  * SERVICES ↗" on the right, divided by a hairline rule. Below, a
  * three-up grid of cards: image on top (no overlay), label and
- * tagline below — clean and commercial.
+ * tagline below: clean and commercial.
  */
 export default function Services() {
   const { t } = useLang();
@@ -36,7 +36,7 @@ export default function Services() {
       className="relative w-full border-t border-ink/10 bg-bg pt-12 pb-14 md:pt-16 md:pb-20 lg:pt-20 lg:pb-24"
     >
       <div className="mx-auto max-w-frame px-6 md:px-10 lg:px-12">
-        {/* Header row — Kaiora compact pattern: eyebrow left + CTA right
+        {/* Header row: Kaiora compact pattern: eyebrow left + CTA right
             on one baseline, both at the same small caps size. */}
         <div
           data-reveal
@@ -63,7 +63,7 @@ export default function Services() {
           </TransitionLink>
         </div>
 
-        {/* Three image cards — image on top, label and tagline below */}
+        {/* Three image cards: image on top, label and tagline below */}
         <div className="mt-8 grid grid-cols-1 gap-x-6 gap-y-10 md:mt-10 md:grid-cols-3 md:gap-x-6 lg:gap-x-8">
           {t.services.items.map((s) => {
             const href = serviceHref(s.key);
@@ -76,7 +76,7 @@ export default function Services() {
                 data-reveal
                 className="group block"
               >
-                {/* Image — clean, no overlay */}
+                {/* Image: clean, no overlay */}
                 <div className="relative aspect-[4/5] w-full overflow-hidden bg-ink/5 md:aspect-[5/4]">
                   <img
                     src={s.image}

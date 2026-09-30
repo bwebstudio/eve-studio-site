@@ -28,7 +28,7 @@ const TransitionLink = forwardRef(function TransitionLink(
     try {
       const url = new URL(href, window.location.origin);
       if (url.pathname === window.location.pathname) {
-        // Same-route hash anchor — let the SmoothScroll click handler
+        // Same-route hash anchor: let the SmoothScroll click handler
         // catch it and animate to the section.
         if (url.hash) return;
         // Same route + no hash (e.g. logo click while already on /).

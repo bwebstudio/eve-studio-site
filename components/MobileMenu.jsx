@@ -22,7 +22,7 @@ export default function MobileMenu({ isOpen, onClose, onOpenWorkOverlay }) {
   // When the menu link triggers a cross-route navigation (e.g. About
   // clicked from /blog → router.push("/#about")), the close-animation
   // onComplete fires AFTER Next.js has already navigated. We must not
-  // restore the old page's scroll Y onto the new page — that's what
+  // restore the old page's scroll Y onto the new page, that's what
   // was producing the "briefly scrolls to the section then jumps to
   // home" bug. Setting this flag tells onComplete to skip the restore.
   const skipScrollRestoreRef = useRef(false);
@@ -90,9 +90,9 @@ export default function MobileMenu({ isOpen, onClose, onOpenWorkOverlay }) {
           }
 
           // Two requestAnimationFrames:
-          //   1st — let the browser apply our scrollTo restore so the
+          //   1st: let the browser apply our scrollTo restore so the
           //         layout sees the restored scroll position
-          //   2nd — measure target with that scroll, then perform the
+          //   2nd: measure target with that scroll, then perform the
           //         jump. Without the second RAF, measurement can run
           //         before Lenis's scroll-listener has synced its
           //         internal state, and the jump lands at the wrong Y.
@@ -107,7 +107,7 @@ export default function MobileMenu({ isOpen, onClose, onOpenWorkOverlay }) {
 
               // Lenis's RAF writes its internal `animatedScroll` to the
               // document on every frame. If we just call window.scrollTo,
-              // Lenis's next tick can overwrite it with a stale value —
+              // Lenis's next tick can overwrite it with a stale value,
               // that's how navigation was silently snapping the user
               // back to the top. To prevent the race:
               //   1. stop Lenis (pauses its RAF)
@@ -176,7 +176,7 @@ export default function MobileMenu({ isOpen, onClose, onOpenWorkOverlay }) {
 
     // Same-page anchor flow: covers both #hash links AND clicking
     // "Home" while already on home (Next.js's router.push("/")
-    // becomes a no-op on the same URL — without this branch the user
+    // becomes a no-op on the same URL: without this branch the user
     // would close the menu and stay scrolled at the previous section).
     if (onHome) {
       let hash = null;
@@ -191,7 +191,7 @@ export default function MobileMenu({ isOpen, onClose, onOpenWorkOverlay }) {
       if (hash !== null) {
         e.preventDefault();
         pendingHashRef.current = hash;
-        // Don't release body lock here — keep the page visually
+        // Don't release body lock here: keep the page visually
         // anchored while the menu fades out. The onComplete handler
         // releases the lock, restores the scroll, and hands off to
         // Lenis in a single tick to avoid the "page jumps to top"
@@ -203,7 +203,7 @@ export default function MobileMenu({ isOpen, onClose, onOpenWorkOverlay }) {
 
     // Cross-route link: let Next.js's Link navigate. Release the body
     // lock immediately AND mark the next onComplete to skip the
-    // scroll-restore — otherwise the old page's scrollY would be
+    // scroll-restore: otherwise the old page's scrollY would be
     // applied to the new page 300ms later, snapping the user away
     // from wherever Next.js had already scrolled.
     skipScrollRestoreRef.current = true;
@@ -248,7 +248,7 @@ export default function MobileMenu({ isOpen, onClose, onOpenWorkOverlay }) {
         </button>
       </div>
 
-      {/* Larger tap targets + vertical breathing room — the previous
+      {/* Larger tap targets + vertical breathing room: the previous
           gap-1 + line-height:1 made adjacent items (Services / Work /
           Contact) bleed into each other on touch, so accidental taps
           opened the wrong route or the Work overlay. py-3 +

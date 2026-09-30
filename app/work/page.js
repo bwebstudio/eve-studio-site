@@ -4,8 +4,8 @@ import SiteFooter from "@/components/SiteFooter";
 import { BRAND } from "@/lib/brand";
 
 export const metadata = {
-  title: `Work — ${BRAND.name}`,
-  description: `Selected projects by ${BRAND.name} — events, brand experiences, photo & video.`,
+  title: `Work · ${BRAND.name}`,
+  description: `Selected projects by ${BRAND.name}: events, brand experiences, photo & video.`,
   alternates: { canonical: "/work" },
 };
 

@@ -4,8 +4,8 @@ import SiteFooter from "@/components/SiteFooter";
 import { BRAND } from "@/lib/brand";
 
 export const metadata = {
-  title: `Services — ${BRAND.name}`,
-  description: `Events, brand experiences, photo & video. Three disciplines, one studio — ${BRAND.name}.`,
+  title: `Services · ${BRAND.name}`,
+  description: `Events, brand experiences, photo & video. Three disciplines, one studio. ${BRAND.name}.`,
 };
 
 export default function ServicesPage() {

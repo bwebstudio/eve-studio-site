@@ -12,7 +12,7 @@ import {
 import useResponsiveScale from "@/lib/useResponsiveScale";
 
 // Gentle ease-out applied to the scroll-linked zoom so the scale
-// decelerates as it approaches 1 — no visible snap when the clamp
+// decelerates as it approaches 1: no visible snap when the clamp
 // kicks in.
 const ZOOM_EASE = cubicBezier(0.22, 1, 0.36, 1);
 
@@ -61,7 +61,7 @@ export default function ImageReveal({
   const scaleStart = useResponsiveScale();
   // Zoom-out finishes well before the image exits the viewport, so
   // once the frame is properly in view the image sits at its natural
-  // size for the rest of the scroll — no more oversized crop while
+  // size for the rest of the scroll: no more oversized crop while
   // the user is still looking at it.
   const imageScale = useTransform(
     scrollYProgress,

@@ -19,7 +19,7 @@ import { gsap } from "gsap";
  *   - `body.cursor-active` hides the native cursor globally.
  *     Only applied when (hover: hover) so touch devices keep native UX.
  *   - `mix-blend-mode: difference` on the root auto-inverts tone on
- *     light vs dark sections — one cursor, both palettes.
+ *     light vs dark sections: one cursor, both palettes.
  */
 
 const STATES = ["default", "hover", "cta", "media", "hero"];

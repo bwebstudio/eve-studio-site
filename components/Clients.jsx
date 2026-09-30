@@ -3,7 +3,7 @@
 import useLang from "@/lib/useLang";
 
 /**
- * Project / client strip on a LIGHT background — matches the rest of the
+ * Project / client strip on a LIGHT background: matches the rest of the
  * home, which keeps a single tonal mood (no dark band). Until MAIT hands
  * over real logo SVGs, each project renders as a sans wordmark inside a
  * CSS marquee. Swap a <span> for an <img src="/logos/*.svg" /> when the

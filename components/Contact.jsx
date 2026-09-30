@@ -125,7 +125,7 @@ export default function Contact() {
       className="relative w-full border-t border-ink/10 bg-bg pb-14 pt-12 md:pb-16 md:pt-16 lg:pt-20"
     >
       <div className="mx-auto max-w-frame px-6 md:px-10 lg:px-12">
-        {/* Header row — Kaiora compact pattern */}
+        {/* Header row: Kaiora compact pattern */}
         <div data-reveal className="flex items-baseline justify-between gap-6">
           <p
             className="text-[11px] uppercase tracking-[0.24em] text-ink"
@@ -178,7 +178,7 @@ export default function Contact() {
           </div>
         </div>
 
-        {/* Form — full width. INFO / SOCIAL columns live in SiteFooter so
+        {/* Form: full width. INFO / SOCIAL columns live in SiteFooter so
             we don't duplicate them here. */}
         <div className="mt-10 grid grid-cols-12 gap-6 md:mt-12 md:gap-8">
           <form

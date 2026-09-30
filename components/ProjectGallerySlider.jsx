@@ -11,7 +11,7 @@ const EASE = [0.22, 1, 0.36, 1];
  * fixed aspect ratio so portrait and landscape source frames sit on
  * the same rhythm (object-cover unifies the crop). Counter, segmented
  * progress and minimal arrows match the rest of the site's editorial
- * controls — thin lines, uppercase tracking, no chrome.
+ * controls: thin lines, uppercase tracking, no chrome.
  */
 export default function ProjectGallerySlider({ items, projectTitle }) {
   const wrapRef = useRef(null);
@@ -39,7 +39,7 @@ export default function ProjectGallerySlider({ items, projectTitle }) {
   const prev = useCallback(() => goTo(index - 1), [goTo, index]);
   const next = useCallback(() => goTo(index + 1), [goTo, index]);
 
-  // Keyboard navigation — only when the slider is visible on screen,
+  // Keyboard navigation: only when the slider is visible on screen,
   // so it doesn't steal arrow keys from the page when scrolled away.
   useEffect(() => {
     if (!inView) return;
@@ -93,7 +93,7 @@ export default function ProjectGallerySlider({ items, projectTitle }) {
       className="mt-12 md:mt-16"
       role="region"
       aria-roledescription="carousel"
-      aria-label={`${projectTitle} — editorial gallery`}
+      aria-label={`${projectTitle}: editorial gallery`}
     >
       {/* Viewport */}
       <div
@@ -120,7 +120,7 @@ export default function ProjectGallerySlider({ items, projectTitle }) {
           >
             <img
               src={current.src}
-              alt={current.alt || `${projectTitle} — ${index + 1}`}
+              alt={current.alt || `${projectTitle}: ${index + 1}`}
               loading="lazy"
               decoding="async"
               draggable="false"
@@ -129,7 +129,7 @@ export default function ProjectGallerySlider({ items, projectTitle }) {
           </motion.div>
         </AnimatePresence>
 
-        {/* Edge click zones — hover-only invitation, kept invisible
+        {/* Edge click zones: hover-only invitation, kept invisible
             so the image itself stays the hero. Desktop niceity. */}
         <button
           type="button"
@@ -156,7 +156,7 @@ export default function ProjectGallerySlider({ items, projectTitle }) {
           <span>{counter.total}</span>
         </div>
 
-        {/* Progress segments — clickable to jump directly to any slide */}
+        {/* Progress segments: clickable to jump directly to any slide */}
         <div
           className="col-span-4 flex items-center gap-1.5 md:col-span-6 md:gap-2"
           role="tablist"
@@ -240,7 +240,7 @@ export default function ProjectGallerySlider({ items, projectTitle }) {
         </div>
       </div>
 
-      {/* Caption — quiet, optional */}
+      {/* Caption: quiet, optional */}
       {current.alt && (
         <p
           key={`caption-${index}`}

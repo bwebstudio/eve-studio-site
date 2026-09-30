@@ -11,7 +11,7 @@ import MaskReveal from "./MaskReveal";
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 // Same warm beige as before, but applied through a scroll-driven
 // overlay so the tint breathes in/out as the section enters and
-// leaves the viewport — same mechanic as the hero's black overlay.
+// leaves the viewport: same mechanic as the hero's black overlay.
 const TINT = "#d8c9b1";
 
 export default function Newsletter() {
@@ -84,12 +84,12 @@ export default function Newsletter() {
 
   const isLocked = status === "submitting" || status === "success";
 
-  // Scroll-driven beige tint — viewport-wide overlay whose opacity
+  // Scroll-driven beige tint: viewport-wide overlay whose opacity
   // ramps as this section crosses the viewport, identical mechanic
   // to the hero's black overlay but attenuated so it reads as a
   // gentle paper-tone moment, not a heavy mood shift.
   // Offset uses "start center" so the tint only ramps once the
-  // section's top has reached viewport centre — keeps it from
+  // section's top has reached viewport centre: keeps it from
   // bleeding over the previous (Services) section.
   const { scrollYProgress } = useScroll({
     target: rootRef,
@@ -221,7 +221,7 @@ export default function Newsletter() {
                 </label>
               </div>
 
-              {/* Status line — fixed height to avoid layout shift */}
+              {/* Status line: fixed height to avoid layout shift */}
               <div className="mt-5 min-h-[1.25rem] text-[11px] uppercase tracking-[0.22em]">
                 {status === "success" && (
                   <span className="text-ink/75">{n.success}</span>

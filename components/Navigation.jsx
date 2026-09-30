@@ -14,7 +14,7 @@ import WorkOverlay from "./WorkOverlay";
  * toggle) so the third language is discoverable and every option is
  * reachable in a single tap/keystroke. `compact` drops the tracking a
  * touch for the mobile rail. py-3 gives each button a ~41px tall hit
- * area — comfortably tappable — without changing where the label sits.
+ * area: comfortably tappable: without changing where the label sits.
  */
 function LanguageSelector({ lang, setLang, locales, localeLabels, label, compact = false }) {
   return (
@@ -90,15 +90,15 @@ export default function Navigation() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // Show every nav item except Home (the logo handles that) — matches
+  // Show every nav item except Home (the logo handles that), matches
   // the Kaiora reference where Contact lives inline with the rest of
   // the nav rather than as a separate CTA on the right.
   const primaryLinks = t.nav.links.filter((link) => link.href !== "/");
 
   const handleNavClick = (link) => (e) => {
     // Any nav item declaring kind:"work-overlay" opens the editorial
-    // category overlay instead of navigating. No item currently does —
-    // the "Work" entry was removed from the menu — but <WorkOverlay> and
+    // category overlay instead of navigating. No item currently does,
+    // the "Work" entry was removed from the menu: but <WorkOverlay> and
     // this hook are kept intact so the entry can be restored from
     // content.js alone once the portfolio is ready.
     if (link.kind === "work-overlay") {
@@ -110,7 +110,7 @@ export default function Navigation() {
   return (
     <header
       ref={navRef}
-      // Always-light bar to match the Kaiora reference — the home is
+      // Always-light bar to match the Kaiora reference, the home is
       // light bg throughout, no dark cinematic strip to compensate for.
       // A subtle backdrop blur appears on scroll.
       className={`fixed left-0 right-0 top-0 z-50 transition-[background-color,border-color,backdrop-filter] duration-300 ease-out ${
@@ -122,7 +122,7 @@ export default function Navigation() {
       <div className="mx-auto flex max-w-frame items-center justify-between gap-8 px-6 py-5 text-ink md:px-10 md:py-5 lg:px-12">
         <Logo href="/" />
 
-        {/* Center nav — all primary items including Contact */}
+        {/* Center nav: all primary items including Contact */}
         <nav className="hidden items-center gap-7 text-[12px] uppercase tracking-[0.18em] lg:flex">
           {primaryLinks.map((link) => (
             <Link
@@ -136,7 +136,7 @@ export default function Navigation() {
           ))}
         </nav>
 
-        {/* Right rail — language + clock, subtle */}
+        {/* Right rail: language + clock, subtle */}
         <div className="hidden items-center gap-5 text-[11px] uppercase tracking-[0.18em] md:flex">
           <span className="hidden text-ink/60 xl:inline">
             Madrid · {time}
@@ -178,7 +178,7 @@ export default function Navigation() {
         onOpenWorkOverlay={() => {
           setIsMenuOpen(false);
           // Wait one frame so the mobile menu's exit animation can begin
-          // before the overlay slides in — keeps the layering clean.
+          // before the overlay slides in: keeps the layering clean.
           window.setTimeout(() => setIsWorkOpen(true), 60);
         }}
       />

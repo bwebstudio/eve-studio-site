@@ -14,7 +14,7 @@ const EASE = [0.22, 1, 0.36, 1];
 /**
  * Shared layout for the Work category routes (/work/events and
  * /work/photo-video). The third pillar, Brand Experiences, has its own
- * service page instead — see /services/brand-experiences.
+ * service page instead: see /services/brand-experiences.
  *
  * Renders the category eyebrow / title / intro, an optional grid of
  * projects (sourced from the parent route), and a CTA back to

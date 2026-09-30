@@ -12,13 +12,13 @@ import TransitionLink from "./TransitionLink";
 const EASE = [0.22, 1, 0.36, 1];
 
 /**
- * /services/brand-experiences — pillar 02.
+ * /services/brand-experiences: pillar 02.
  *
  * Editorial, typography-first: numbering and hairlines instead of icons,
  * one CTA at the top and one at the close, and nothing that reads as a
  * marketing landing page. Motion is limited to the site-wide
  * [data-reveal] fade + small rise (GSAP) and the same heading rise the
- * other inner pages use — both neutralised by prefers-reduced-motion via
+ * other inner pages use: both neutralised by prefers-reduced-motion via
  * the global rules in globals.css, so the page is complete without them.
  *
  * Rhythm mirrors WorkCategoryPage / AllServicesPage (eyebrow rail → big
@@ -26,13 +26,13 @@ const EASE = [0.22, 1, 0.36, 1];
  */
 
 /**
- * Visual support — real, authorised project (Alena Angel Art).
+ * Visual support: real, authorised project (Alena Angel Art).
  *
  * Deliberately NOT a case study: no title link, no project page, no
  * embedded site, no portfolio grid. Just a couple of frames sitting
  * inside the narrative as evidence of the kind of work described above.
  *
- * Renders nothing at all while `BRAND_EXPERIENCE_SUPPORT` is empty — no
+ * Renders nothing at all while `BRAND_EXPERIENCE_SUPPORT` is empty, no
  * placeholder boxes, no stand-in imagery, and no empty gap in the
  * vertical rhythm.
  */
@@ -112,7 +112,7 @@ export default function BrandExperiencesPage() {
       className="relative w-full bg-bg pt-[120px] md:pt-[152px] lg:pt-[176px]"
     >
       <div className="mx-auto max-w-frame px-6 pb-[80px] md:px-10 md:pb-[112px] lg:px-12 lg:pb-[128px]">
-        {/* ── Block 1 — hero ─────────────────────────────────────────── */}
+        {/* ── Block 1: hero ─────────────────────────────────────────── */}
         <div className="flex items-baseline justify-between gap-6 text-[11px] uppercase tracking-[0.22em] text-ink/60">
           <span>{b.eyebrow}</span>
           <TransitionLink href="/" className="link-underline text-ink">
@@ -184,7 +184,7 @@ export default function BrandExperiencesPage() {
           </div>
         </div>
 
-        {/* ── Block 2 — what it means ────────────────────────────────── */}
+        {/* ── Block 2: what it means ────────────────────────────────── */}
         <section className="mt-24 border-t border-ink/10 pt-10 md:mt-32 md:pt-14">
           <div className="grid grid-cols-12 gap-x-6 gap-y-6 md:gap-x-10">
             <h2
@@ -210,7 +210,7 @@ export default function BrandExperiencesPage() {
           </div>
         </section>
 
-        {/* ── Block 3 — what we can create ───────────────────────────── */}
+        {/* ── Block 3: what we can create ───────────────────────────── */}
         <section className="mt-24 md:mt-32">
           <h2
             data-reveal
@@ -249,7 +249,7 @@ export default function BrandExperiencesPage() {
           </ul>
         </section>
 
-        {/* ── Block 4 — the process ──────────────────────────────────── */}
+        {/* ── Block 4: the process ──────────────────────────────────── */}
         <section className="mt-24 md:mt-32">
           <h2
             data-reveal
@@ -259,7 +259,7 @@ export default function BrandExperiencesPage() {
             {b.process.title}
           </h2>
 
-          {/* Mobile / tablet: vertical timeline — a hairline runs down the
+          {/* Mobile / tablet: vertical timeline: a hairline runs down the
               left of the stack and each step hangs off it.
               Desktop (lg+): five columns, each capped by its own rule. */}
           <ol className="mt-8 border-l border-ink/15 pl-6 md:mt-10 lg:grid lg:grid-cols-5 lg:gap-x-8 lg:border-l-0 lg:pl-0">
@@ -271,7 +271,7 @@ export default function BrandExperiencesPage() {
                   i === 0 ? "pt-0" : ""
                 }`}
               >
-                {/* Timeline node — mobile only */}
+                {/* Timeline node: mobile only */}
                 <span
                   aria-hidden="true"
                   className="absolute -left-[26px] top-[0.55em] h-px w-4 bg-ink/30 lg:hidden"
@@ -305,7 +305,7 @@ export default function BrandExperiencesPage() {
         {/* ── Visual support (renders only when assets exist) ────────── */}
         <SupportMedia copy={b.support} />
 
-        {/* ── Block 5 — what an experience can include ───────────────── */}
+        {/* ── Block 5: what an experience can include ───────────────── */}
         <section className="mt-24 md:mt-32">
           <h2
             data-reveal
@@ -345,7 +345,7 @@ export default function BrandExperiencesPage() {
           </p>
         </section>
 
-        {/* ── Block 6 — the result ───────────────────────────────────── */}
+        {/* ── Block 6: the result ───────────────────────────────────── */}
         <section className="mt-24 border-t border-ink/10 pt-10 md:mt-32 md:pt-14">
           <div className="grid grid-cols-12 gap-x-6 gap-y-6 md:gap-x-10">
             <h2
@@ -370,7 +370,7 @@ export default function BrandExperiencesPage() {
             </p>
           </div>
 
-          {/* Closing line — the typographic peak of the page. */}
+          {/* Closing line: the typographic peak of the page. */}
           <p
             data-reveal
             className="mt-16 max-w-[20ch] text-ink md:mt-24"
@@ -386,7 +386,7 @@ export default function BrandExperiencesPage() {
           </p>
         </section>
 
-        {/* ── Block 7 — closing CTA (the page's only other CTA) ──────── */}
+        {/* ── Block 7: closing CTA (the page's only other CTA) ──────── */}
         <section className="mt-24 border-t border-ink/10 pt-10 md:mt-32 md:pt-14">
           <div className="grid grid-cols-12 gap-x-6 gap-y-6 md:gap-x-10">
             <h2

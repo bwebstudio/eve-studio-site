@@ -6,10 +6,10 @@ import { motion, useInView, useReducedMotion } from "framer-motion";
 const EASE = [0.16, 1, 0.3, 1];
 
 /**
- * Editorial text reveal — minimal controlled motion.
+ * Editorial text reveal: minimal controlled motion.
  *
  * The text slides in from a slight offset (x: -24, y: 20) and fades to
- * opacity 1. No clipping, no overflow tricks — just a clean translate +
+ * opacity 1. No clipping, no overflow tricks: just a clean translate +
  * fade. Safer for editorial serif with tight line-height, because glyph
  * ascenders/descenders are never at risk of being cut off.
  */

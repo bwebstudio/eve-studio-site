@@ -7,12 +7,12 @@ module.exports = {
   ],
   theme: {
     extend: {
-      // Mirrors the custom properties in globals.css (:root) — keep the
+      // Mirrors the custom properties in globals.css (:root), keep the
       // two in sync. `bg` is the site ground: a warm off-white / soft
       // bone, extremely light and neutral without reading beige.
       colors: {
         bg: "#FAF8F5",
-        // One quiet step darker, same warm family — used by the clients
+        // One quiet step darker, same warm family: used by the clients
         // band so the strip gets its own moment without a hard contrast.
         "bg-mute": "#F1EDE7",
         ink: "#111111",

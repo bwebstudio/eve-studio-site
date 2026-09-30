@@ -6,15 +6,15 @@ import Preloader from "@/components/Preloader";
 import { BRAND } from "@/lib/brand";
 
 export const metadata = {
-  title: `${BRAND.name} — Creative Studio`,
+  title: `${BRAND.name} · Creative Studio`,
   description: `${BRAND.name} is a creative studio shaping brand identity, brand experiences and visual content for contemporary brands.`,
   // Canonical origin for every relative URL in metadata (OG images,
-  // canonicals). Sourced from BRAND.siteUrl — see lib/brand.js.
+  // canonicals). Sourced from BRAND.siteUrl: see lib/brand.js.
   metadataBase: new URL(BRAND.siteUrl),
   applicationName: BRAND.name,
   openGraph: {
     siteName: BRAND.name,
-    title: `${BRAND.name} — Creative Studio`,
+    title: `${BRAND.name} · Creative Studio`,
     description:
       "Events, brand experiences, photo & video. Creative direction and production under one roof.",
     type: "website",
