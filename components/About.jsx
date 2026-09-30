@@ -46,8 +46,8 @@ export default function About() {
               className="relative aspect-[4/5] w-full overflow-hidden bg-ink/5 md:aspect-[4/3] lg:aspect-[5/4]"
             >
               <img
-                src="/images/studio_portrait.png"
-                alt="MAIT Studio, studio portrait"
+                src="/images/studio-portrait-desk.webp"
+                alt="MAIT Studio, reviewing prints at the studio table"
                 className="absolute inset-0 h-full w-full object-cover"
                 draggable="false"
               />
