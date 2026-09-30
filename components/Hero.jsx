@@ -9,18 +9,42 @@ import useAppReady from "@/lib/useAppReady";
  * Hero reel.
  *
  * `/video/video3.mp4` (crowd dancing under stage lights) was removed from
- * the rotation at the client's request — it read artificial next to the
- * rest of the reel. No substitute was added: the only other clips in the
- * repo are the two vertical (9:16) project loops, which cannot carry a
- * wide cinematic hero. The file is left on disk so it can be swapped for
- * a proper wide replacement by adding it back to this array.
+ * the rotation at the client's request: it read artificial next to the
+ * rest of the reel. It stays on disk but must not come back.
+ *
+ * `video4-aerial.mp4` is the drone plate the client delivered for the
+ * homepage. The master (`DJI_…D00000000.mp4`) is a 60 MB, 16 s, 60 fps
+ * 1080×1920 vertical clip, so it is not web-usable as shot. The reel
+ * version is cropped to 4:3 at y=250 and runs 15.5 s at 30 fps, with no
+ * audio. 4:3 is the widest source the narrowest band (mobile) needs, so
+ * the default centred `object-cover` serves every breakpoint and neither
+ * of the other two clips is touched.
+ *
+ * Two things about this clip drove those numbers:
+ *
+ *   The drone pulls back over the 16 s, so the framing cannot be judged
+ *   from the opening seconds. Cropping from the top of the frame suits
+ *   the first five, then empties to bare water as the boats shrink away.
+ *   y=250 is the one window that keeps boats in the wide desktop band
+ *   for the whole take.
+ *
+ *   It runs nearly the full master on purpose: at 5.2 s the pan barely
+ *   registered. That is why `hold` is per clip below rather than one
+ *   shared interval.
+ *
+ * It sits last: the first entry is the only one that blocks bandwidth
+ * (`preload="auto"`).
  */
-const VIDEOS = ["/video/video1.mp4", "/video/video2.mp4"];
-const CYCLE_MS = 5200;
+const VIDEOS = [
+  { src: "/video/video1.mp4", hold: 5200 },
+  { src: "/video/video2.mp4", hold: 5200 },
+  // Held almost to its full length so the drone move reads.
+  { src: "/video/video4-aerial.mp4", hold: 15400 },
+];
 const EASE = [0.22, 1, 0.36, 1];
 
 /**
- * Cinematic editorial hero — the reel leads.
+ * Cinematic editorial hero: the reel leads.
  *
  * The video used to sit boxed in the right-hand column of a 2-up split.
  * It is now a single wide band across the full editorial frame, cropped
@@ -33,7 +57,7 @@ const EASE = [0.22, 1, 0.36, 1];
  *
  * Headline BELOW the video rather than overlaid: overlaying type on a
  * cycling reel means the contrast changes under the words from clip to
- * clip, which forces a scrim — and a scrim over a full-width video is
+ * clip, which forces a scrim, and a scrim over a full-width video is
  * exactly the "advertising banner" register the brief rules out. Below
  * the video the type sits on the studio's own ground at full contrast,
  * reads as editorial rather than promotional, and needs no effects.
@@ -45,7 +69,7 @@ export default function Hero() {
   const videoRefs = useRef([]);
   const [idx, setIdx] = useState(0);
 
-  // With reduced motion the hero simply *is* — no entrance offsets, no
+  // With reduced motion the hero simply *is*: no entrance offsets, no
   // fades. `false` tells framer-motion to skip the initial state and
   // render the animate target directly. (The reel itself also stops
   // cycling; see the interval effect below.)
@@ -64,13 +88,20 @@ export default function Hero() {
     });
   }, [idx]);
 
+  // Each clip holds for its own duration, so a long plate is not cut off
+  // by a shared interval. Re-armed on every change rather than run as one
+  // repeating timer, and keyed on `idx` so the pending timeout is cleared
+  // whenever the clip changes.
   useEffect(() => {
     if (typeof window === "undefined") return;
     if (VIDEOS.length < 2) return;
     if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
-    const id = setInterval(() => setIdx((i) => (i + 1) % VIDEOS.length), CYCLE_MS);
-    return () => clearInterval(id);
-  }, []);
+    const id = setTimeout(
+      () => setIdx((i) => (i + 1) % VIDEOS.length),
+      VIDEOS[idx]?.hold ?? 5200
+    );
+    return () => clearTimeout(id);
+  }, [idx]);
 
   const h = t.hero;
 
@@ -80,7 +111,7 @@ export default function Hero() {
       className="relative flex w-full flex-col bg-bg pt-24 text-ink md:pt-28 lg:pt-32"
     >
       <div className="mx-auto flex w-full max-w-frame flex-1 flex-col px-6 pb-10 md:px-10 md:pb-14 lg:px-12 lg:pb-16">
-        {/* Meta rail — editorial signature kept from the previous hero. */}
+        {/* Meta rail: editorial signature kept from the previous hero. */}
         <motion.div
           initial={enter({ opacity: 0, y: 12 })}
           animate={{ opacity: 1, y: 0 }}
@@ -94,7 +125,7 @@ export default function Hero() {
           </span>
         </motion.div>
 
-        {/* THE REEL — wide, full-frame, first thing on screen.
+        {/* THE REEL: wide, full-frame, first thing on screen.
             Aspect widens with the viewport (4/3 phone → 21/9 desktop) so
             it stays present on small screens and cinematic on large ones,
             never letterboxed into a thin banner. */}
@@ -109,11 +140,11 @@ export default function Hero() {
           // entirely below it; object-cover simply crops a little wider.
           className="relative mt-6 aspect-[4/3] w-full overflow-hidden bg-ink sm:aspect-[3/2] md:mt-8 md:aspect-[16/9] md:max-h-[62svh] lg:aspect-[21/9]"
         >
-          {VIDEOS.map((src, i) => (
+          {VIDEOS.map((clip, i) => (
             <video
-              key={src}
+              key={clip.src}
               ref={(el) => { videoRefs.current[i] = el; }}
-              src={src}
+              src={clip.src}
               autoPlay={i === 0}
               muted
               loop={VIDEOS.length === 1}
